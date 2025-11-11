@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký tài khoản bán hàng</title>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    // 🔥 Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAb5AZOBvEVY3a_9ioEKTW-wuVMXdnRZGQ",
+      authDomain: "sellglass-3ebe9.firebaseapp.com",
+      databaseURL: "https://sellglass-3ebe9-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "sellglass-3ebe9",
+      storageBucket: "sellglass-3ebe9.firebasestorage.app",
+      messagingSenderId: "513741829035",
+      appId: "1:513741829035:web:1b2c59dcf1a0be329358ee",
+      measurementId: "G-1STVZT6NV4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // 🧩 Hàm đăng ký người dùng
+    async function dangKy() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirm = document.getElementById("confirm").value.trim();
+      const hoten = document.getElementById("hoten").value.trim();
+      const diachi = document.getElementById("diachi").value.trim();
+      const sdt = document.getElementById("sdt").value.trim();
+      const ngaysinh = document.getElementById("ngaysinh").value.trim();
+
+      if (!username || !password || !confirm || !hoten || !diachi || !sdt || !ngaysinh) {
+        alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
+        return;
+      }
+
+      if (password !== confirm) {
+        alert("❌ Mật khẩu xác nhận không khớp!");
+        return;
+      }
+
+      try {
+        const dbRef = ref(db);
+        const snapshot = await get(child(dbRef, "users"));
+        let exists = false;
+        if (snapshot.exists()) {
+          snapshot.forEach(childSnap => {
+            const user = childSnap.val();
+            if (user.username === username) exists = true;
+          });
+        }
+
+        if (exists) {
+          alert("⚠️ Tên đăng nhập đã tồn tại!");
+          return;
+        }
+
+        // 🔒 Lưu người dùng mới
+        await set(ref(db, "users/" + username), {
+          username,
+          password,
+          hoten,
+          diachi,
+          sdt,
+          ngaysinh
+        });
+
+        alert("✅ Đăng ký thành công!");
+        window.location.href = "dangnhapbanhang.html";
+      } catch (error) {
+        console.error(error);
+        alert("🚫 Lỗi khi đăng ký tài khoản!");
+      }
+    }
+
+    window.dangKy = dangKy;
+  </script>
+
+  <!-- 💅 CSS -->
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #cce5ff, #b3d9ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .register-box {
+      background: #fff;
+      padding: 30px 35px;
+      border-radius: 15px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      width: 340px;
+      text-align: center;
+      border: 2px solid #007bff30;
+      position: relative;
+    }
+
+    .register-box h2 {
+      margin-bottom: 15px;
+      color: #0077cc;
+      font-weight: bold;
+    }
+
+    .icon-header {
+      position: absolute;
+      top: -35px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0077cc;
+      color: white;
+      font-size: 26px;
+      padding: 12px;
+      border-radius: 50%;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    .input-group input {
+      width: 85%;
+      padding: 9px 10px 9px 33px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    .input-group input:focus {
+      border-color: #0077cc;
+      box-shadow: 0 0 4px rgba(0,119,204,0.3);
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #0077cc;
+      font-size: 17px;
+    }
+
+    button {
+      width: 85%;
+      padding: 9px;
+      background: #0077cc;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #005fa3;
+    }
+
+    .login-link {
+      margin-top: 12px;
+      font-size: 13px;
+    }
+
+    .login-link a {
+      color: #0077cc;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="register-box">
+    <div class="icon-header">🧾</div>
+    <h2>Đăng ký tài khoản</h2>
+
+    <div class="input-group">
+      <i>👤</i>
+      <input type="text" id="username" placeholder="Tên đăng nhập">
+    </div>
+
+    <div class="input-group">
+      <i>🔒</i>
+      <input type="password" id="password" placeholder="Mật khẩu">
+    </div>
+
+    <div class="input-group">
+      <i>✅</i>
+      <input type="password" id="confirm" placeholder="Nhập lại mật khẩu">
+    </div>
+
+    <div class="input-group">
+      <i>🧍‍♂️</i>
+      <input type="text" id="hoten" placeholder="Họ và tên">
+    </div>
+
+    <div class="input-group">
+      <i>🏠</i>
+      <input type="text" id="diachi" placeholder="Địa chỉ">
+    </div>
+
+    <div class="input-group">
+      <i>📞</i>
+      <input type="text" id="sdt" placeholder="Số điện thoại">
+    </div>
+
+    <div class="input-group">
+      <i>🎂</i>
+      <input type="date" id="ngaysinh" placeholder="Ngày sinh">
+    </div>
+
+    <button onclick="dangKy()">Đăng ký</button>
+
+    <div class="login-link">
+      Đã có tài khoản? <a href="dangnhap.html">Đăng nhập ngay</a>
+    </div>
+  </div>
+
+</body>
+</html>
