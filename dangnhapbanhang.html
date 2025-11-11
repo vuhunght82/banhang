@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập hệ thống bán hàng</title>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        // 🔥 Firebase config (bạn có thể tách riêng file firebase-config.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAb5AZOBvEVY3a_9ioEKTW-wuVMXdnRZGQ",
+            authDomain: "sellglass-3ebe9.firebaseapp.com",
+            databaseURL: "https://sellglass-3ebe9-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "sellglass-3ebe9",
+            storageBucket: "sellglass-3ebe9.firebasestorage.app",
+            messagingSenderId: "513741829035",
+            appId: "1:513741829035:web:1b2c59dcf1a0be329358ee",
+            measurementId: "G-1STVZT6NV4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // 🔐 Xử lý đăng nhập
+        async function dangNhap() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const remember = document.getElementById("remember").checked;
+
+            if (!username || !password) {
+                alert("⚠️ Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!");
+                return;
+            }
+
+            try {
+                const dbRef = ref(db);
+                const snapshot = await get(child(dbRef, "nhanvien"));
+                if (snapshot.exists()) {
+                    let found = false;
+                    snapshot.forEach(childSnap => {
+                        const user = childSnap.val();
+                        if (user.email === username && user.pass === password) {
+                            found = true;
+                            if (remember) {
+                                localStorage.setItem("currentUser", username);
+                            } else {
+                                sessionStorage.setItem("currentUser", username);
+                            }
+                            alert("✅ Đăng nhập thành công!");
+                            window.location.href = "index.html"; // ← Trang chính
+                        }
+                    });
+                    if (!found) {
+                        alert("❌ Sai tên đăng nhập hoặc mật khẩu!");
+                    }
+                } else {
+                    alert("⚠️ Không tìm thấy dữ liệu người dùng trong Firebase!");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("🚫 Lỗi khi kết nối Firebase!");
+            }
+        }
+
+        // 💾 Tự động điền nếu “ghi nhớ đăng nhập”
+        window.onload = () => {
+            const savedUser = localStorage.getItem("currentUser");
+            if (savedUser) {
+                document.getElementById("username").value = savedUser;
+                document.getElementById("remember").checked = true;
+            }
+        };
+
+        window.dangNhap = dangNhap;
+    </script>
+
+    <!-- 🌊 GIAO DIỆN -->
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #cce5ff, #b3d9ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            background: #fff;
+            padding: 35px 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+            width: 360px;
+            text-align: center;
+            border: 2px solid #007bff40;
+            position: relative;
+        }
+
+            .login-box h2 {
+                margin-bottom: 20px;
+                color: #0077cc;
+                font-weight: bold;
+            }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+            .input-group input {
+                width: 85%;
+                padding: 10px 35px 10px 35px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                font-size: 14px;
+                outline: none;
+                transition: 0.3s;
+            }
+
+                .input-group input:focus {
+                    border-color: #0077cc;
+                    box-shadow: 0 0 5px rgba(0,119,204,0.3);
+                }
+
+            .input-group i {
+                position: absolute;
+                left: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #0077cc;
+                font-size: 18px;
+            }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+            .remember label {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                cursor: pointer;
+            }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #0077cc;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+            button:hover {
+                background: #005fa3;
+            }
+
+        .icon-header {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0077cc;
+            color: white;
+            font-size: 25px;
+            padding: 12px;
+            border-radius: 50%;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .forgot a {
+            text-decoration: none;
+            color: #0077cc;
+            font-size: 13px;
+        }
+
+            .forgot a:hover {
+                text-decoration: underline;
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-box">
+        <div class="icon-header">🛍️</div>
+        <h2>Đăng nhập bán hàng</h2>
+
+        <div class="input-group">
+            <i>👤</i>
+            <input type="text" id="username" placeholder="Tên đăng nhập" >
+        </div>
+
+        <div class="input-group">
+            <i>🔒</i>
+            <input type="password" id="password" placeholder="Mật khẩu">
+        </div>
+
+        <div class="remember">
+            <label><input type="checkbox" id="remember"> Ghi nhớ đăng nhập</label>
+            <div class="forgot"><a href="#">Quên mật khẩu?</a></div>
+        </div>
+
+        <button onclick="dangNhap()">Đăng nhập</button>
+    </div>
+
+</body>
+</html>
