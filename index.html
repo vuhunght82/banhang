@@ -1,221 +1,2178 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập hệ thống bán hàng</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hoàng Phúc Glass - Gương Kính Cao Cấp</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      scroll-behavior: smooth;
+      /* Subtle premium shifting radial gradient background */
+      background: radial-gradient(circle at 10% 20%, rgba(241, 245, 249, 0.9) 0%, rgba(224, 242, 254, 0.25) 45%, rgba(248, 250, 252, 0.9) 90%);
+      background-attachment: fixed;
+    }
+    .font-title {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    
+    /* Elegant Slide & Fade up animation for tab switches */
+    .tab-pane-animate {
+      animation: tabSlideUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes tabSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
 
-        // 🔥 Firebase config (bạn có thể tách riêng file firebase-config.js)
-        const firebaseConfig = {
-            apiKey: "AIzaSyAb5AZOBvEVY3a_9ioEKTW-wuVMXdnRZGQ",
-            authDomain: "sellglass-3ebe9.firebaseapp.com",
-            databaseURL: "https://sellglass-3ebe9-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "sellglass-3ebe9",
-            storageBucket: "sellglass-3ebe9.firebasestorage.app",
-            messagingSenderId: "513741829035",
-            appId: "1:513741829035:web:1b2c59dcf1a0be329358ee",
-            measurementId: "G-1STVZT6NV4"
-        };
+    /* Soft scale carousel animation */
+    .carousel-fade {
+      transition: opacity 0.45s ease-in-out, transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    /* Modern Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 99px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // 🔐 Xử lý đăng nhập
-        async function dangNhap() {
-            const username = document.getElementById("username").value.trim();
-            const password = document.getElementById("password").value.trim();
-            const remember = document.getElementById("remember").checked;
-
-            if (!username || !password) {
-                alert("⚠️ Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu!");
-                return;
-            }
-
-            try {
-                const dbRef = ref(db);
-                const snapshot = await get(child(dbRef, "nhanvien"));
-                if (snapshot.exists()) {
-                    let found = false;
-                    snapshot.forEach(childSnap => {
-                        const user = childSnap.val();
-                        if (user.email === username && user.pass === password) {
-                            found = true;
-                            if (remember) {
-                                localStorage.setItem("currentUser", username);
-                            } else {
-                                sessionStorage.setItem("currentUser", username);
-                            }
-                            alert("✅ Đăng nhập thành công!");
-                            window.location.href = "index.html"; // ← Trang chính
-                        }
-                    });
-                    if (!found) {
-                        alert("❌ Sai tên đăng nhập hoặc mật khẩu!");
-                    }
-                } else {
-                    alert("⚠️ Không tìm thấy dữ liệu người dùng trong Firebase!");
-                }
-            } catch (error) {
-                console.error(error);
-                alert("🚫 Lỗi khi kết nối Firebase!");
-            }
-        }
-
-        // 💾 Tự động điền nếu “ghi nhớ đăng nhập”
-        window.onload = () => {
-            const savedUser = localStorage.getItem("currentUser");
-            if (savedUser) {
-                document.getElementById("username").value = savedUser;
-                document.getElementById("remember").checked = true;
-            }
-        };
-
-        window.dangNhap = dangNhap;
-    </script>
-
-    <!-- 🌊 GIAO DIỆN -->
-    <style>
-        body {
-            margin: 0;
-            height: 100vh;
-            font-family: "Segoe UI", sans-serif;
-            background: linear-gradient(135deg, #cce5ff, #b3d9ff);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .login-box {
-            background: #fff;
-            padding: 35px 40px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
-            width: 360px;
-            text-align: center;
-            border: 2px solid #007bff40;
-            position: relative;
-        }
-
-            .login-box h2 {
-                margin-bottom: 20px;
-                color: #0077cc;
-                font-weight: bold;
-            }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-            .input-group input {
-                width: 85%;
-                padding: 10px 35px 10px 35px;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                font-size: 14px;
-                outline: none;
-                transition: 0.3s;
-            }
-
-                .input-group input:focus {
-                    border-color: #0077cc;
-                    box-shadow: 0 0 5px rgba(0,119,204,0.3);
-                }
-
-            .input-group i {
-                position: absolute;
-                left: 10px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #0077cc;
-                font-size: 18px;
-            }
-
-        .remember {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            font-size: 13px;
-        }
-
-            .remember label {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                cursor: pointer;
-            }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #0077cc;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-            button:hover {
-                background: #005fa3;
-            }
-
-        .icon-header {
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #0077cc;
-            color: white;
-            font-size: 25px;
-            padding: 12px;
-            border-radius: 50%;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
-        }
-
-        .forgot a {
-            text-decoration: none;
-            color: #0077cc;
-            font-size: 13px;
-        }
-
-            .forgot a:hover {
-                text-decoration: underline;
-            }
-    </style>
+  <!-- DYNAMIC STYLE FOR THEME COLOR -->
+  <style id="dynamic-theme-style"></style>
 </head>
+<body class="min-h-screen flex flex-col antialiased overflow-x-hidden selection:bg-blue-600 selection:text-white">
 
-<body>
+  <!-- --- TOAST SYSTEM --- -->
+  <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <div class="login-box">
-        <div class="icon-header">🛍️</div>
-        <h2>Đăng nhập bán hàng</h2>
-
-        <div class="input-group">
-            <i>👤</i>
-            <input type="text" id="username" placeholder="Tên đăng nhập" >
+  <!-- --- HEADER NAVIGATION --- -->
+  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200/50 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- Logo Brand -->
+        <div class="flex items-center gap-3 cursor-pointer group" onclick="switchTab('about')">
+          <div class="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center bg-white border border-slate-200 shadow-sm transition-transform group-hover:scale-105">
+            <img id="header-logo" src="image_593650.jpg" alt="Hoàng Phúc Logo" class="w-full h-full object-contain" onerror="handleImageFallback(this, 'logo')">
+          </div>
+          <div>
+            <h1 id="header-title" class="text-base sm:text-lg font-black tracking-wider text-slate-900 uppercase font-title flex items-center gap-1">
+              HOÀNG PHÚC GLASS
+            </h1>
+            <p id="header-subtitle" class="text-[9px] text-primary tracking-widest font-mono uppercase font-bold">Sức mạnh từ niềm tin</p>
+          </div>
         </div>
 
-        <div class="input-group">
-            <i>🔒</i>
-            <input type="password" id="password" placeholder="Mật khẩu">
+        <!-- Menu Navigation Links -->
+        <nav class="flex items-center gap-1 sm:gap-2">
+          <button onclick="switchTab('about')" id="nav-about" class="nav-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-300">
+            Giới thiệu
+          </button>
+          <button onclick="switchTab('shop')" id="nav-shop" class="nav-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-300">
+            Cửa hàng
+          </button>
+          <button onclick="switchTab('tracking')" id="nav-tracking" class="nav-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-300">
+            Theo dõi
+          </button>
+          <button onclick="switchTab('news')" id="nav-news" class="nav-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-300">
+            Tin tức
+          </button>
+          <!-- BẢO MẬT: Nút Quản Trị ẩn tuyệt đối ban đầu -->
+          <button onclick="switchTab('admin')" id="nav-admin" class="nav-btn hidden px-4 py-2 rounded-xl text-xs font-extrabold transition-all items-center gap-1.5 bg-amber-500 text-white shadow-md shadow-amber-500/10 hover:bg-amber-600">
+            <i data-lucide="settings" class="w-3.5 h-3.5 animate-spin-slow"></i>
+            <span>Quản trị</span>
+          </button>
+        </nav>
+
+        <!-- Account Controls -->
+        <div class="flex items-center gap-2">
+          <div id="user-profile-widget" class="hidden lg:flex flex-col items-end text-right mr-1">
+            <span id="user-display-name" class="text-[11px] font-bold text-slate-800"></span>
+            <span id="user-display-role" class="text-[9px] text-primary font-bold uppercase"></span>
+          </div>
+          <button id="auth-action-btn" onclick="handleAuthHeaderAction()" class="px-4.5 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5">
+            <i data-lucide="log-in" class="w-3.5 h-3.5"></i> <span>Đăng nhập</span>
+          </button>
         </div>
 
-        <div class="remember">
-            <label><input type="checkbox" id="remember"> Ghi nhớ đăng nhập</label>
-            <div class="forgot"><a href="#">Quên mật khẩu?</a></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- --- CONTAINER FOR PAGES (TAB CONTENTS) --- -->
+  <main class="flex-grow flex flex-col relative w-full overflow-hidden">
+    
+    <!-- === TAB: ABOUT === -->
+    <section id="tab-about" class="tab-pane w-full py-10 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto space-y-12">
+        
+        <div class="text-center space-y-3 max-w-2xl mx-auto">
+          <h2 id="about-hero-title" class="text-4xl md:text-5xl font-black text-slate-900 tracking-tight font-title">
+            Hoàng Phúc Glass
+          </h2>
+          <div class="h-1.5 w-24 bg-primary mx-auto rounded-full shadow-xs"></div>
+          <p id="about-hero-subtitle" class="text-xs text-primary font-mono tracking-widest uppercase font-black">
+            "Sức mạnh từ niềm tin"
+          </p>
         </div>
 
-        <button onclick="dangNhap()">Đăng nhập</button>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          
+          <!-- Column Left: Introduction text -->
+          <div class="bg-white/70 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-slate-200/60 shadow-sm space-y-6 flex flex-col justify-between min-h-[320px]">
+            <div class="space-y-4">
+              <h3 class="text-base font-bold text-slate-800 flex items-center gap-1.5 border-b border-slate-100 pb-2">
+                <i data-lucide="info" class="text-primary w-4.5 h-4.5"></i> Thông tin doanh nghiệp
+              </h3>
+              <p id="about-text-content" class="text-xs sm:text-sm text-slate-650 leading-relaxed whitespace-pre-wrap">
+                Chào mừng quý khách đến với Gương Kính Hoàng Phúc Glass. Chúng tôi chuyên sản xuất gia công gương nỉ cao cấp, kính cường lực vách tắm, kính ốp bếp màu sắc thời thượng. Toàn bộ phôi gương mài xiết cạnh tinh tế bóng mịn bằng máy tự động CNC.
+              </p>
+            </div>
+            <button onclick="switchTab('shop')" class="w-full sm:w-auto px-6 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-black shadow-lg shadow-blue-500/20 transition-all flex items-center justify-center gap-1.5 hover:scale-102">
+              <span>Khám phá Cửa hàng Ngay</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <!-- Column Right: Auto Carousel Sliding Images with Smooth Scale + Fade transition -->
+          <div class="rounded-2xl overflow-hidden aspect-video border border-slate-200/80 bg-slate-100 shadow-lg relative group">
+            <div class="w-full h-full overflow-hidden">
+              <img id="carousel-image" src="image_593650.jpg" alt="Nhà máy gia công kính" class="carousel-fade w-full h-full object-cover" onerror="handleImageFallback(this, 'carousel')">
+            </div>
+            <div id="carousel-indicator" class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[10px] font-mono text-white">
+              1 / 4
+            </div>
+          </div>
+
+        </div>
+
+        <div class="p-6 rounded-2xl bg-white/70 backdrop-blur-md border border-slate-200/60 text-center space-y-4 shadow-xs">
+          <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Gia công kính theo mọi yêu cầu kích thước & độ dày</h4>
+          <div class="flex flex-wrap justify-center gap-6 text-xs pt-2">
+            <span class="flex items-center gap-1.5 text-primary font-extrabold"><i data-lucide="phone" class="w-3.5 h-3.5"></i> Hỗ trợ trực tiếp: +84 796 774 774</span>
+            <span class="text-slate-300">|</span>
+            <span class="flex items-center gap-1.5 text-primary font-extrabold"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i> Địa chỉ xưởng: 36 Phạm Văn Sáng, Hóc Môn</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === TAB: SHOP === -->
+    <section id="tab-shop" class="tab-pane hidden w-full py-10 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto space-y-6">
+        
+        <!-- TOP NOTIFICATION BANNER WHEN CART HAS ITEMS -->
+        <div id="shop-cart-banner" class="hidden bg-blue-50 border border-blue-200 p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-md animate-pulse">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-slate-800">Bạn có kính cường lực đã chọn trong giỏ hàng</h4>
+              <p class="text-[10px] text-slate-500">Nhấn Tiếp tục để xác nhận kích cỡ và đặt lịch.</p>
+            </div>
+          </div>
+          <button onclick="enterCheckoutView()" class="px-5 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-black rounded-xl transition-all flex items-center gap-1 shadow-md shadow-blue-500/20">
+            <span>Tiếp tục đặt hàng</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- VIEW: PRODUCTS GRID -->
+        <div id="shop-grid-view" class="space-y-6">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-200/80">
+            
+            <div class="flex flex-wrap gap-4 items-center">
+              
+              <!-- Dropdown Danh mục -->
+              <div class="relative">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mẫu sản phẩm kính</label>
+                <select id="filter-category" onchange="applyFilters()" class="px-4 py-2 bg-white border border-slate-200 hover:border-primary rounded-xl text-xs font-bold text-slate-800 focus:outline-none shadow-sm min-w-48 cursor-pointer">
+                  <option value="all">Tất cả tấm kính</option>
+                  <option value="category_clear">Kính Cường Lực</option>
+                  <option value="category_decorative">Gương Decor</option>
+                  <option value="category_colored">Kính Nghệ Thuật</option>
+                </select>
+              </div>
+
+              <!-- Dropdown Độ Dày -->
+              <div class="relative">
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Độ dày tròng kính</label>
+                <select id="filter-thickness" onchange="applyFilters()" class="px-4 py-2 bg-white border border-slate-200 hover:border-primary rounded-xl text-xs font-bold text-slate-800 focus:outline-none shadow-sm min-w-36 cursor-pointer">
+                  <option value="all">Tất cả độ dày</option>
+                  <option value="thickness_5mm">Khổ 5mm</option>
+                  <option value="thickness_8mm">Khổ 8mm</option>
+                  <option value="thickness_10mm">Khổ 10mm</option>
+                  <option value="thickness_12mm">Khổ 12mm</option>
+                </select>
+              </div>
+
+            </div>
+
+            <!-- Search Bar -->
+            <div class="w-full md:w-auto">
+              <input type="text" id="search-product" oninput="applyFilters()" placeholder="Tìm loại kính..." class="w-full md:w-48 px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:border-primary shadow-sm">
+            </div>
+
+          </div>
+
+          <!-- Grid Products Container -->
+          <div id="products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
+        <!-- VIEW: CHECKOUT SEQUENCE -->
+        <div id="shop-checkout-view" class="hidden max-w-3xl mx-auto space-y-8">
+          
+          <!-- Steps Indicator -->
+          <div class="flex items-center justify-center gap-2 text-[10px] font-bold pb-4 border-b border-slate-150">
+            <span id="step-badge-1" class="px-2.5 py-1 rounded-lg bg-primary text-white shadow-sm">1. Chắc chắn đã được chưa</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span id="step-badge-2" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-400">2. Nhập mã giảm giá</span>
+            <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span id="step-badge-3" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-400">3. Xác thực & Gửi đơn hàng</span>
+          </div>
+
+          <div id="checkout-step-panes" class="relative">
+            
+            <!-- STEP 1: REVIEW PRODUCT CART -->
+            <div id="checkout-pane-1" class="space-y-4">
+              <div class="bg-blue-50/50 p-3.5 rounded-xl border border-blue-100 text-[11px] text-slate-600 font-medium">
+                Hãy xem kỹ lại quy cách và số lượng tròng kính của bạn trước khi đi đến bước tiếp theo.
+              </div>
+              <div id="cart-items-list" class="space-y-3"></div>
+              <div class="p-4 bg-white border border-slate-200 rounded-xl flex justify-between items-center gap-3">
+                <button onclick="exitCheckoutView()" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-slate-800">
+                  Quay lại Cửa hàng
+                </button>
+                <button onclick="goToCheckoutStep(2)" id="cart-continue-btn" class="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-blue-500/20">
+                  <span>Tiếp tục</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 2: PROMO CODES -->
+            <div id="checkout-pane-2" class="hidden space-y-4">
+              <div class="bg-white p-6 border border-slate-200 rounded-2xl space-y-6 shadow-sm">
+                <div class="space-y-1">
+                  <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1">
+                    <i data-lucide="ticket" class="text-primary w-4 h-4"></i> Nhập mã giảm giá nếu có
+                  </h4>
+                  <p class="text-[10px] text-slate-400">Nhập mã ưu đãi (Mã mẫu: <code class="font-mono bg-slate-100 px-1 py-0.5 rounded text-primary">HOANGPHUC10</code> hoặc <code class="font-mono bg-slate-100 px-1 py-0.5 rounded text-primary">HOANGPHUC20</code>)</p>
+                </div>
+
+                <div class="flex gap-2">
+                  <input type="text" id="promo-code-input" placeholder="Mã giảm giá..." class="flex-grow px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-slate-50">
+                  <button onclick="applyPromoCode()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl">
+                    Áp dụng
+                  </button>
+                </div>
+
+                <div class="border-t border-slate-100 pt-4 space-y-2 text-xs">
+                  <div class="flex justify-between text-slate-500">
+                    <span>Tạm tính từ phôi kính:</span>
+                    <span id="calc-subtotal" class="font-mono font-bold text-slate-800">0 ₫</span>
+                  </div>
+                  <div id="promo-discount-row" class="hidden justify-between text-emerald-600">
+                    <span id="promo-label">Giảm giá:</span>
+                    <span id="calc-discount" class="font-mono font-bold">0 ₫</span>
+                  </div>
+                  <div class="flex justify-between text-sm pt-2 border-t border-slate-100">
+                    <span class="font-bold text-slate-800">Tổng tiền dự kiến thanh toán:</span>
+                    <span id="calc-total" class="font-mono font-extrabold text-primary">0 ₫</span>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                  <button onclick="goToCheckoutStep(1)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold">
+                    Quay lại
+                  </button>
+                  <button onclick="goToCheckoutStep(3)" class="flex-grow py-2.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20">
+                    Tiếp tục <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 3: AUTH AND DISPATCH -->
+            <div id="checkout-pane-3" class="hidden space-y-4">
+              
+              <!-- Authenticate inside sequence if user is null -->
+              <div id="checkout-auth-guard" class="hidden bg-white p-6 border border-slate-200 rounded-2xl shadow-md space-y-4">
+                <div class="text-center space-y-1">
+                  <i data-lucide="alert-circle" class="text-primary mx-auto w-6 h-6"></i>
+                  <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Xác thực tài khoản đặt hàng</h4>
+                  <p class="text-[11px] text-slate-500">Quý khách vui lòng xác thực tài khoản nhanh để lưu thông tin đơn kính của bạn.</p>
+                </div>
+                <button onclick="switchTab('login')" class="w-full py-2.5 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-1">
+                  <i data-lucide="log-in" class="w-4 h-4"></i> Đi tới trang Đăng nhập / Đăng ký
+                </button>
+              </div>
+
+              <!-- Form Details if logged in -->
+              <div id="checkout-dispatch-form" class="hidden bg-white border border-slate-200 rounded-2xl p-5 md:p-6 shadow-sm">
+                
+                <!-- Spinner loader -->
+                <div id="order-loading-spinner" class="hidden text-center py-12 space-y-4">
+                  <i data-lucide="refresh-cw" class="mx-auto text-primary animate-spin w-10 h-10"></i>
+                  <h4 class="text-xs font-bold text-slate-800 uppercase tracking-widest">Đang truyền đơn hàng...</h4>
+                  <p class="text-[10px] text-slate-500 max-w-xs mx-auto">Đang gửi cấu hình phôi tấm kính và thông số kỹ thuật đến địa chỉ hòm thư <code class="font-mono text-blue-600 text-xs">vudinhhung11@gmail.com</code>...</p>
+                </div>
+
+                <!-- Form -->
+                <form id="form-place-order" onsubmit="handlePlaceOrder(event)" class="space-y-4">
+                  <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2 mb-3">Thông tin hẹn nhận kính trực tiếp tại xưởng</h3>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Họ tên *</label>
+                      <input type="text" id="order-name" required placeholder="Nhập tên của bạn" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-white">
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Số điện thoại *</label>
+                      <input type="tel" id="order-phone" required placeholder="0796 774 774" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-white">
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Thư điện tử</label>
+                      <input type="email" id="order-email" placeholder="nhập thư điện tử" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-white">
+                    </div>
+                    <div>
+                      <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Địa chỉ của bạn *</label>
+                      <input type="text" id="order-address" required placeholder="Huyện Hóc Môn, TP. Hồ Chí Minh..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-white">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Ghi chú yêu cầu cắt mài</label>
+                    <textarea id="order-notes" rows="2" placeholder="Ví dụ: Cắt xiết góc, giao mài bóng cạnh phôi..." class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary resize-none bg-white"></textarea>
+                  </div>
+
+                  <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-[11px] text-slate-500 leading-relaxed">
+                    <p class="font-bold text-primary">Địa chỉ nhà xưởng nhận hàng trực tiếp:</p>
+                    <p class="text-slate-700 font-extrabold">36 Phạm Văn Sáng, Hóc Môn, Thành Phố Hồ Chí Minh</p>
+                  </div>
+
+                  <div class="flex gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="goToCheckoutStep(2)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold">Quay lại</button>
+                    <button type="submit" class="flex-grow py-2.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20">
+                      Xác nhận gửi đơn & Hẹn lịch <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </form>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === TAB: TRACKING === -->
+    <section id="tab-tracking" class="tab-pane hidden w-full py-10 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto space-y-10">
+        
+        <div class="text-center space-y-2">
+          <h2 class="text-2xl font-black text-slate-900 flex items-center justify-center gap-2 font-title">
+            <i data-lucide="truck" class="text-primary w-6 h-6"></i> Theo Dõi Tiến Độ Gia Công
+          </h2>
+          <p class="text-xs text-slate-500 max-w-md mx-auto">Nhập mã đơn hàng của bạn để kiểm tra quy trình cắt mài kính tự động.</p>
+        </div>
+
+        <form onsubmit="handleTrackingQuery(event)" class="max-w-md mx-auto flex gap-2">
+          <input type="text" id="tracking-input-id" placeholder="Nhập mã đơn hàng (HP-xxxx)..." class="flex-grow px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-primary">
+          <button type="submit" class="px-5 py-2.5 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-xl transition-all shadow-sm">
+            Tra cứu tiến độ
+          </button>
+        </form>
+
+        <!-- Tracking Visual Card -->
+        <div id="tracking-visual-card" class="hidden bg-white border border-slate-200 p-6 md:p-8 rounded-2xl shadow-xl space-y-12 relative overflow-visible">
+          
+          <div class="flex flex-wrap justify-between items-center gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <p class="text-[10px] text-slate-400 uppercase tracking-widest font-mono">ĐƠN HÀNG TRA CỨU:</p>
+              <h4 id="track-order-display-id" class="text-sm font-bold text-primary font-mono">-</h4>
+            </div>
+            <div class="text-right">
+              <p class="text-[10px] text-slate-400 uppercase font-mono">Trạng thái đơn hàng:</p>
+              <span id="track-order-display-status" class="inline-block px-3 py-1 bg-blue-50 text-primary rounded-lg text-xs font-bold border border-blue-100">
+                -
+              </span>
+            </div>
+          </div>
+
+          <!-- Progress Line with Truck anim -->
+          <div class="relative pt-6 pb-4">
+            <div class="absolute top-1/2 left-0 right-0 h-2 bg-slate-100 rounded-full -translate-y-1/2"></div>
+            
+            <div id="track-progress-fill" class="absolute top-1/2 left-0 h-2 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-full -translate-y-1/2 transition-all duration-1000 ease-in-out" style="width: 15%;"></div>
+
+            <div id="track-truck-icon-container" class="absolute top-1/2 -translate-y-1/2 -ml-5 transition-all duration-1000 ease-in-out z-20" style="left: 15%;">
+              <div class="w-10 h-10 rounded-full bg-primary border-2 border-white flex items-center justify-center shadow-lg shadow-blue-500/50 animate-pulse">
+                <i data-lucide="truck" class="text-white w-4.5 h-4.5"></i>
+              </div>
+            </div>
+
+            <!-- Reference circle landmarks -->
+            <div class="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 pointer-events-none z-10">
+              <div id="landmark-step-1" class="w-5 h-5 rounded-full border-2 bg-blue-600 border-white text-white flex items-center justify-center transition-colors duration-1000">
+                <i data-lucide="check" class="w-3 h-3"></i>
+              </div>
+              <div id="landmark-step-2" class="w-5 h-5 rounded-full border-2 bg-slate-200 border-slate-300 text-slate-400 flex items-center justify-center transition-colors duration-1000">
+                <i data-lucide="check" class="w-3 h-3"></i>
+              </div>
+              <div id="landmark-step-3" class="w-5 h-5 rounded-full border-2 bg-slate-200 border-slate-300 text-slate-400 flex items-center justify-center transition-colors duration-1000">
+                <i data-lucide="check" class="w-3 h-3"></i>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="grid grid-cols-3 text-center text-[10px] sm:text-xs font-bold text-slate-500 pt-2">
+            <div id="step-label-1" class="text-primary font-extrabold">Nhận đơn hàng</div>
+            <div id="step-label-2" class="text-slate-400">Cắt và mài</div>
+            <div id="step-label-3" class="text-slate-400">Liên lạc với khách</div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === TAB: NEWS === -->
+    <section id="tab-news" class="tab-pane hidden w-full py-10 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto space-y-6">
+        
+        <div class="border-b border-slate-200 pb-3">
+          <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2 font-title">
+            <i data-lucide="newspaper" class="text-primary w-5 h-5"></i> Tin tức & Bảng báo giá sản phẩm
+          </h2>
+          <p class="text-[11px] text-slate-500 mt-1">Thông tin cập nhật phôi kính, xu hướng gương mài cạnh bóng từ ban quản trị.</p>
+        </div>
+
+        <div id="news-container" class="space-y-4"></div>
+
+      </div>
+    </section>
+
+    <!-- === TAB: ADMIN === -->
+    <section id="tab-admin" class="tab-pane hidden w-full py-10 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-6xl mx-auto space-y-8">
+        
+        <!-- Header widget -->
+        <div class="bg-white border border-slate-200 p-6 rounded-3xl flex flex-wrap items-center justify-between gap-4 shadow-md">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/20">
+              <i data-lucide="settings" class="w-6 h-6 animate-spin-slow"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-black text-slate-900 flex items-center gap-1.5 font-title">
+                Hệ Thống Quản Trị Hoàng Phúc Glass
+              </h2>
+              <p class="text-[11.5px] text-slate-500 font-medium">
+                Xin chào, <span id="admin-user-salute" class="font-bold text-amber-600">Quản trị viên</span>. Toàn quyền cấu hình giao diện, sản phẩm, tin tức và đặc biệt quản lý hình ảnh doanh nghiệp.
+              </p>
+            </div>
+          </div>
+          <button onclick="logout()" class="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all">
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Thoát Admin
+          </button>
+        </div>
+
+        <!-- Sub Tabs Nav in Admin -->
+        <div class="flex flex-wrap items-center gap-1.5 border-b border-slate-200 pb-3">
+          <button onclick="switchAdminSubTab('theme')" id="admin-sub-theme" class="admin-sub-btn px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-2 transition-all bg-slate-900 text-white shadow-md">
+            <i data-lucide="palette" class="w-3.5 h-3.5"></i> <span>Giao diện & Màu sắc</span>
+          </button>
+          <button onclick="switchAdminSubTab('images')" id="admin-sub-images" class="admin-sub-btn px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-2 transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/60">
+            <i data-lucide="image" class="w-3.5 h-3.5"></i> <span>Điều khiển ảnh</span>
+          </button>
+          <button onclick="switchAdminSubTab('aboutText')" id="admin-sub-aboutText" class="admin-sub-btn px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-2 transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/60">
+            <i data-lucide="edit-2" class="w-3.5 h-3.5"></i> <span>Soạn bài Giới thiệu</span>
+          </button>
+          <button onclick="switchAdminSubTab('products')" id="admin-sub-products" class="admin-sub-btn px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-2 transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/60">
+            <i data-lucide="layers" class="w-3.5 h-3.5"></i> <span>Thiết kế phôi Kính mới</span>
+          </button>
+          <button onclick="switchAdminSubTab('orders')" id="admin-sub-orders" class="admin-sub-btn px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-2 transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/60">
+            <i data-lucide="receipt" class="w-3.5 h-3.5"></i> <span>Đơn đặt hàng & Tiến trình</span>
+          </button>
+          <button onclick="switchAdminSubTab('announcements')" id="admin-sub-announcements" class="admin-sub-btn px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-2 transition-all bg-white text-slate-600 hover:bg-slate-100 border border-slate-200/60">
+            <i data-lucide="newspaper" class="w-3.5 h-3.5"></i> <span>Bản tin tức & Báo giá</span>
+          </button>
+        </div>
+
+        <!-- Sub Tabs Panels -->
+        <div id="admin-sub-panes">
+          
+          <!-- SUB-PANEL: THEME DESIGN -->
+          <div id="admin-pane-theme" class="admin-pane-content grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-6">
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-2 flex items-center gap-1.5 font-title">
+                <i data-lucide="sliders" class="w-4 h-4 text-primary"></i> Thiết kế cấu hình giao diện
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-2">Màu sắc chủ đạo hệ thống</label>
+                  <div class="flex items-center gap-3">
+                    <input type="color" id="settings-primary-color" onchange="updateLivePreview()" class="w-12 h-10 border border-slate-200 rounded-xl cursor-pointer bg-transparent">
+                    <input type="text" id="settings-primary-color-text" oninput="updateLivePreview()" placeholder="#0055ff" class="flex-grow px-3 py-2.5 border border-slate-300 rounded-xl text-xs font-mono font-bold uppercase focus:outline-none focus:border-primary">
+                  </div>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Tên doanh nghiệp chính hiển thị ở Header & Footer</label>
+                  <input type="text" id="settings-banner-title" oninput="updateLivePreview()" placeholder="Hoàng Phúc Glass" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-primary">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5">Khẩu hiệu / Slogan thương hiệu</label>
+                  <input type="text" id="settings-banner-subtitle" oninput="updateLivePreview()" placeholder="Sức mạnh từ niềm tin" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-primary">
+                </div>
+                <button onclick="saveThemeSettings()" class="w-full py-2.5 bg-primary text-white font-bold text-xs rounded-xl shadow hover:scale-[1.01] transition-transform">Lưu thay đổi</button>
+              </div>
+            </div>
+
+            <!-- Preview Card -->
+            <div class="bg-slate-100/70 p-6 rounded-3xl border border-dashed border-slate-300 flex flex-col justify-between">
+              <div class="space-y-4">
+                <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider block font-mono">Live Preview (Xem thử màu sắc)</span>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/50 space-y-3">
+                  <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-white border flex items-center justify-center overflow-hidden">
+                      <img id="preview-logo" src="image_593650.jpg" alt="" class="w-full h-full object-contain" onerror="handleImageFallback(this, 'logo')">
+                    </div>
+                    <div>
+                      <h4 id="preview-title" class="text-xs font-black text-slate-800 uppercase font-title">HOÀNG PHÚC GLASS</h4>
+                      <p id="preview-subtitle" class="text-[9px] text-primary font-bold">Sức mạnh từ niềm tin</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white p-4 rounded-xl text-[11px] text-slate-500 leading-relaxed border border-slate-200/80">
+                📌 **Mẹo:** Việc tùy biến màu sắc chủ đạo sẽ áp dụng tự động cho toàn bộ hệ thống các nút đặt hàng, các nhãn trích xuất, và các thanh định danh tiến độ gia công.
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-PANEL: IMAGES MANAGEMENT (DASHBOARD ĐIỀU KHIỂN ẢNH) -->
+          <div id="admin-pane-images" class="admin-pane-content hidden space-y-6">
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-6">
+              <div class="border-b border-slate-100 pb-3">
+                <h3 class="text-sm font-black text-slate-950 uppercase tracking-wider flex items-center gap-2 font-title">
+                  <i data-lucide="image" class="text-amber-500 w-5 h-5"></i> Điều khiển cấu hình hình ảnh trực tuyến
+                </h3>
+                <p class="text-[11px] text-slate-500 mt-1">Cập nhật trực tiếp địa chỉ liên kết (URL) của các biểu mẫu ảnh trên trang chủ và slide trưng bày của xưởng.</p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Logo & Banner Setup -->
+                <div class="space-y-4">
+                  <h4 class="text-xs font-bold text-slate-800 uppercase tracking-widest border-l-2 border-primary pl-2">Ảnh Logo & Banner</h4>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Đường dẫn Logo doanh nghiệp</label>
+                    <input type="text" id="settings-logo-img" oninput="updateLivePreview()" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Ảnh nền Banner trang chủ</label>
+                    <input type="text" id="settings-banner-image" oninput="updateLivePreview()" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary">
+                  </div>
+                </div>
+
+                <!-- Carousel Setup -->
+                <div class="space-y-4">
+                  <h4 class="text-xs font-bold text-slate-800 uppercase tracking-widest border-l-2 border-primary pl-2">4 Ảnh Trình Chiếu Carousel (Giới Thiệu)</h4>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Ảnh Slide 1</label>
+                    <input type="text" id="settings-carousel-1" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Ảnh Slide 2</label>
+                    <input type="text" id="settings-carousel-2" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Ảnh Slide 3</label>
+                    <input type="text" id="settings-carousel-3" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary">
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Ảnh Slide 4</label>
+                    <input type="text" id="settings-carousel-4" class="w-full px-3 py-1.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary">
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex justify-end border-t border-slate-100 pt-4">
+                <button onclick="saveImageControlSettings()" class="px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/10 hover:scale-[1.01] transition-transform flex items-center gap-1.5">
+                  <i data-lucide="save" class="w-4 h-4"></i> Lưu cấu hình ảnh
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-PANEL: ABOUT TEXT EDITOR -->
+          <div id="admin-pane-aboutText" class="admin-pane-content hidden bg-white border border-slate-200 p-6 rounded-3xl shadow-sm max-w-3xl space-y-4">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-150 pb-2 font-title">Biên soạn bài viết Giới thiệu Hoàng Phúc Glass</h3>
+            <p class="text-[11px] text-slate-400">Nội dung bạn soạn thảo bên dưới sẽ hiển thị ngay lập tức tại Tab chính "Giới thiệu".</p>
+            <div class="space-y-4">
+              <textarea id="admin-about-textarea" rows="12" class="w-full p-4 border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-primary leading-relaxed resize-none font-medium bg-white"></textarea>
+              <div class="flex justify-end">
+                <button onclick="saveAboutContent()" class="px-6 py-2 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-xl shadow">Lưu & Phát hành bài viết</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-PANEL: PRODUCTS DESIGN -->
+          <div id="admin-pane-products" class="admin-pane-content hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="bg-white border border-slate-200 p-5 rounded-3xl shadow-sm space-y-4 lg:col-span-1">
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-150 pb-2 flex items-center gap-1.5 font-title">
+                <i data-lucide="plus" class="w-4 h-4 text-primary"></i> Thiết kế phôi kính mới
+              </h3>
+              <form id="admin-add-product-form" onsubmit="handleAddNewProduct(event)" class="space-y-4">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tên tấm kính *</label>
+                  <input type="text" id="new-prod-name" required placeholder="Kính cường lực mài..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-primary bg-white">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Đơn Giá *</label>
+                  <input type="text" id="new-prod-price" required placeholder="1.150.000 VNĐ / m²" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-primary bg-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Phân loại</label>
+                    <select id="new-prod-category" class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700">
+                      <option value="category_clear">Kính Cường Lực</option>
+                      <option value="category_decorative">Gương Decor</option>
+                      <option value="category_colored">Kính Nghệ Thuật</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Khổ dày</label>
+                    <select id="new-prod-thickness" class="w-full px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700">
+                      <option value="thickness_5mm">Kính 5mm</option>
+                      <option value="thickness_8mm">Kính 8mm</option>
+                      <option value="thickness_10mm">Kính 10mm</option>
+                      <option value="thickness_12mm">Kính 12mm</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between items-center mb-1">
+                    <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider">Mô tả đặc tính kính</label>
+                    <button type="button" onclick="generateAiProductDescription()" id="ai-desc-btn" class="text-[9px] font-bold bg-primary hover:bg-primary-dark text-white px-2 py-0.5 rounded flex items-center gap-1 cursor-pointer">
+                      <i data-lucide="sparkles" class="w-3 h-3"></i> <span>Gemini AI</span>
+                    </button>
+                  </div>
+                  <textarea id="new-prod-description" rows="3" class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs resize-none focus:outline-none focus:border-primary bg-white"></textarea>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Đường dẫn ảnh sản phẩm *</label>
+                  <input type="url" id="new-prod-image" required placeholder="Dán link ảnh từ CDN..." class="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-primary bg-white">
+                </div>
+                <button type="submit" class="w-full py-2 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-lg shadow">Lưu mẫu kính</button>
+              </form>
+            </div>
+
+            <div class="bg-white border border-slate-200 p-5 rounded-3xl shadow-sm space-y-4 lg:col-span-2">
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-2 font-title">
+                Kho sản phẩm hiện tại (<span id="admin-prod-count">0</span>)
+              </h3>
+              <div id="admin-products-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2"></div>
+            </div>
+          </div>
+
+          <!-- SUB-PANEL: ORDERS PROGRESS MANAGEMENT -->
+          <div id="admin-pane-orders" class="admin-pane-content hidden bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-2 flex items-center gap-1.5 font-title">
+              <i data-lucide="receipt" class="w-4 h-4 text-primary"></i> Danh sách yêu cầu gia công kính (<span id="admin-order-count">0</span>)
+            </h3>
+            <div id="admin-orders-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+          </div>
+
+          <!-- SUB-PANEL: ANNOUNCEMENTS MANAGEMENT -->
+          <div id="admin-pane-announcements" class="admin-pane-content hidden grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-2 font-title">Đăng Tin tức & Bảng Báo Giá mới</h3>
+              <form id="admin-announcement-form" onsubmit="handleCreateAnnouncement(event)" class="space-y-4">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tiêu đề bản tin</label>
+                  <input type="text" id="ann-title" required placeholder="Báo giá kính xây dựng..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:outline-none focus:border-primary bg-white">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Chuyên mục hiển thị</label>
+                  <select id="ann-category" class="w-full px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-700">
+                    <option value="Báo giá">Bảng báo giá</option>
+                    <option value="Tin tức">Tin tức công ty</option>
+                    <option value="Ưu đãi">Chương trình ưu đãi</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Nội dung</label>
+                  <textarea id="ann-content" rows="4" required placeholder="Nội dung thông báo..." class="w-full px-3 py-1.5 border border-slate-200 rounded-lg text-xs resize-none focus:outline-none focus:border-primary bg-white"></textarea>
+                </div>
+                <button type="submit" class="w-full py-2 bg-primary hover:bg-primary-dark text-white font-bold text-xs rounded-lg transition-all">Đăng bản tin tức thời</button>
+              </form>
+            </div>
+
+            <div class="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm space-y-4">
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-200 pb-2 font-title">Bản tin đã phát hành</h3>
+              <div id="admin-announcements-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- === TAB: LOGIN / REGISTER === -->
+    <section id="tab-login" class="tab-pane hidden w-full py-10 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-md mx-auto bg-white border border-slate-200 rounded-3xl p-8 shadow-2xl relative overflow-hidden text-slate-800">
+        <div class="absolute top-0 left-0 right-0 h-1.5 bg-primary"></div>
+
+        <div class="text-center space-y-1 mb-6">
+          <img id="login-brand-logo" src="image_593650.jpg" alt="Hoàng Phúc Logo" class="w-16 h-16 object-contain mx-auto rounded-xl" onerror="handleImageFallback(this, 'logo')">
+          <h2 id="login-header-title" class="text-2xl font-black text-slate-900 tracking-tight font-title">Đăng nhập</h2>
+          <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Hoàng Phúc Glass</p>
+        </div>
+
+        <!-- Slider switch login / register -->
+        <div class="grid grid-cols-2 p-1 bg-slate-100 rounded-xl border border-slate-200 mb-6">
+          <button onclick="switchAuthMode('login')" id="auth-switch-login" class="py-2 text-xs font-bold rounded-lg transition-all bg-primary text-white shadow-md">Đăng nhập</button>
+          <button onclick="switchAuthMode('register')" id="auth-switch-register" class="py-2 text-xs font-bold rounded-lg transition-all text-slate-500">Đăng ký</button>
+        </div>
+
+        <!-- Forms forms container -->
+        <div class="relative overflow-hidden w-full min-h-[280px]">
+          
+          <!-- LOGIN CONTAINER -->
+          <form id="form-login-box" onsubmit="handleLoginSubmit(event)" class="space-y-4 transition-all duration-300">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tên tài khoản / Email</label>
+              <input type="text" id="login-username" required placeholder="Nhập tài khoản của bạn..." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-slate-50">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mật khẩu</label>
+              <input type="password" id="login-password" required placeholder="Mật khẩu của bạn..." class="w-full px-3.5 py-2 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-slate-50">
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-xs transition-all shadow-md">
+              Đăng nhập
+            </button>
+          </form>
+
+          <!-- REGISTER CONTAINER -->
+          <form id="form-register-box" onsubmit="handleRegisterSubmit(event)" class="hidden space-y-3 transition-all duration-300">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Họ và Tên</label>
+              <input type="text" id="reg-name" required placeholder="Họ và Tên của bạn..." class="w-full px-3.5 py-1.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-slate-50">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Email / Tài khoản</label>
+              <input type="text" id="reg-username" required placeholder="nhập thư điện tử..." class="w-full px-3.5 py-1.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-slate-50">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-1">Mật khẩu</label>
+              <input type="password" id="reg-password" required placeholder="Mật khẩu..." class="w-full px-3.5 py-1.5 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-primary bg-slate-50">
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-bold text-xs transition-all shadow-md">
+              Đăng ký
+            </button>
+          </form>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- --- PRODUCT DETAIL MODAL --- -->
+  <div id="product-detail-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="bg-white border border-slate-200 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative">
+      <button onclick="closeProductModal()" class="absolute top-4 right-4 p-2 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-full z-10">
+        <i data-lucide="x" class="w-4.5 h-4.5"></i>
+      </button>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6 md:p-8 text-slate-800">
+        <div class="rounded-2xl overflow-hidden aspect-square bg-slate-50 border border-slate-200">
+          <img id="modal-prod-image" src="" alt="" class="w-full h-full object-cover" onerror="handleImageFallback(this, 'product')">
+        </div>
+
+        <div class="flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <span class="inline-block text-[10px] font-bold text-white bg-primary px-2.5 py-0.5 rounded-lg uppercase">
+              Chi tiết sản phẩm kính
+            </span>
+            <h2 id="modal-prod-name" class="text-lg font-bold text-slate-900 font-title">-</h2>
+            
+            <div class="flex items-baseline gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+              <span id="modal-prod-price" class="text-sm font-bold text-primary">-</span>
+              <span id="modal-prod-thickness" class="text-[10px] text-slate-450 font-bold">Khổ dày: -</span>
+            </div>
+
+            <p id="modal-prod-description" class="text-xs text-slate-600 leading-relaxed">-</p>
+
+            <div class="border-t border-slate-100 pt-4 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-primary"></i> Tư vấn ứng dụng từ Gemini AI
+                </span>
+                <button onclick="requestAiConsultation()" id="ai-consult-trigger-btn" class="px-2.5 py-1 bg-slate-50 border border-slate-200 rounded-lg text-[10px] font-bold text-primary hover:bg-slate-100 transition-all">
+                  Xem tư vấn thiết kế
+                </button>
+              </div>
+
+              <div id="ai-consultation-result" class="hidden p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-600 leading-relaxed whitespace-pre-wrap font-semibold"></div>
+            </div>
+          </div>
+
+          <div class="flex gap-2 pt-2">
+            <button id="modal-add-to-cart-btn" class="flex-grow py-2.5 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl text-xs transition-all flex items-center justify-center gap-1.5 shadow hover:scale-[1.01]">
+              <i data-lucide="shopping-cart" class="w-4 h-4"></i> Thêm vào giỏ
+            </button>
+            <button onclick="closeProductModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-semibold">
+              Đóng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- --- FOOTER --- -->
+  <footer class="bg-white text-slate-450 border-t border-slate-200 py-12 mt-auto text-[11px]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="space-y-3">
+        <span class="text-slate-900 font-extrabold tracking-wider text-sm flex items-center gap-2">
+          <img id="footer-logo" src="image_593650.jpg" alt="" class="w-6 h-6 object-contain rounded" onerror="handleImageFallback(this, 'logo')"> 
+          <span id="footer-title">HOÀNG PHÚC GLASS</span>
+        </span>
+        <p id="footer-subtitle" class="leading-relaxed text-slate-500 max-w-sm">
+          "Sức mạnh từ niềm tin" — Chuyên gia đo đạc, chế tác hoàn thiện phôi gương dán tường nghệ thuật, vách kính chịu lực cao cấp.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="text-slate-800 font-bold mb-3 uppercase tracking-wider text-[10px]">Hỗ trợ kỹ thuật & Nhận hàng trực tiếp</h4>
+        <p class="leading-relaxed text-slate-600 font-medium">Thư điện tử: support@hoangphucglass.com</p>
+        <p class="text-slate-600 font-medium">Hỗ trợ trực tiếp: +84 796 774 774</p>
+        <p class="pt-2">
+          <a href="https://www.facebook.com/HoangPhucGlass" target="_blank" rel="noreferrer" class="text-primary hover:underline font-bold">
+            Theo dõi chúng tôi trên Facebook
+          </a>
+        </p>
+      </div>
     </div>
 
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-100 mt-8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-slate-400">
+      <p id="footer-copy-info">© 2026 Hoàng Phúc Glass. Hệ thống kết nối lưu trữ SQLite & Gemini AI.</p>
+    </div>
+  </footer>
+
+  <!-- ==================== WEB APP JAVASCRIPT STATE ENGINE ==================== -->
+  <script>
+    // System Config & Global Variables
+    const apiKey = ""; // API key is dynamic from runtime injection
+
+    // States with initial loading or dynamic LocalStorage fetch
+    let user = JSON.parse(localStorage.getItem('glassy_user')) || null;
+    let products = JSON.parse(localStorage.getItem('hp_products')) || [
+      {
+        id: 'HPG-1001',
+        name: 'Gương Led Phòng Tắm Cảm Ứng Tròn',
+        description: 'Gương phôi nỉ cao cấp chịu ẩm chống ố mốc, tích hợp đèn LED đổi màu thông minh.',
+        price: '1.450.000 VNĐ / chiếc',
+        image: 'https://images.unsplash.com/photo-1618220179428-22790b461013?w=800&auto=format&fit=crop&q=80',
+        category: 'category_decorative',
+        thickness: 'thickness_5mm'
+      },
+      {
+        id: 'HPG-1002',
+        name: 'Kính Cường Lực Khổ 8mm Xiết Bóng Cạnh',
+        description: 'Khả năng chịu lực va đập tuyệt đối, phù hợp làm vách ngăn kính, mặt bàn chịu nhiệt.',
+        price: '850.000 VNĐ / m²',
+        image: 'https://images.unsplash.com/photo-1617806118233-18e1db207fd6?w=800&auto=format&fit=crop&q=80',
+        category: 'category_clear',
+        thickness: 'thickness_8mm'
+      }
+    ];
+
+    let orders = JSON.parse(localStorage.getItem('hp_orders')) || [];
+    let announcements = JSON.parse(localStorage.getItem('hp_announcements')) || [
+      {
+        id: 'NEWS-01',
+        title: 'Bảng Báo Giá Gia Công Kính Cường Lực Quý 2/2026',
+        content: 'Hoàng Phúc Glass hân hạnh gửi tới quý đối tác bảng đơn giá gia công phôi kính mới nhất áp dụng từ tháng 6/2026. Chi tiết mài mỏ vịt, mài vát lá hẹ mượt mà.',
+        category: 'Báo giá',
+        date: '07/06/2026'
+      }
+    ];
+
+    let aboutContent = localStorage.getItem('hp_about_text') || "Chào mừng quý khách đến với Gương Kính Hoàng Phúc Glass. Chúng tôi chuyên sản xuất gia công gương nỉ cao cấp, kính cường lực vách tắm, kính ốp bếp màu sắc thời thượng. Toàn bộ phôi gương mài xiết cạnh tinh tế bóng mịn bằng máy tự động CNC.";
+    
+    // Loaded settings containing Image Control
+    let settings = JSON.parse(localStorage.getItem('hp_settings')) || {
+      primaryColor: '#0055ff',
+      bannerImage: 'https://images.unsplash.com/photo-1618220179428-22790b461013?w=800&auto=format&fit=crop&q=80',
+      bannerTitle: 'Hoàng Phúc Glass',
+      bannerSubtitle: 'Sức mạnh từ niềm tin',
+      logoImage: 'image_593650.jpg',
+      carouselImages: [
+        'https://images.unsplash.com/photo-1618220179428-22790b461013?w=800',
+        'https://images.unsplash.com/photo-1617806118233-18e1db207fd6?w=800',
+        'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800',
+        'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800'
+      ]
+    };
+
+    // Session States
+    let activeTab = 'about';
+    let adminSubTab = 'theme';
+    let shopView = 'grid'; // 'grid' | 'checkout'
+    let cart = [];
+    let cartStep = 1;
+    let discountApplied = 0;
+    let selectedModalProduct = null;
+    let currentTrackedOrder = null;
+
+    // Carousel index state
+    let carouselIndex = 0;
+
+    // Safe Error image fallbacks to avoid infinite blinking loop
+    function handleImageFallback(imgElement, type) {
+      imgElement.onerror = null; // Unbind error to stop infinite blinking
+      if (type === 'logo') {
+        imgElement.src = 'https://images.unsplash.com/photo-1618220179428-22790b461013?w=150';
+      } else if (type === 'carousel') {
+        imgElement.src = 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800';
+      } else {
+        imgElement.src = 'https://images.unsplash.com/photo-1617806118233-18e1db207fd6?w=800';
+      }
+    }
+
+    // Load setup elements on init
+    window.onload = function() {
+      applyThemeStyles();
+      initSettingsForm();
+      renderAll();
+      
+      // Auto slideshow carousel with smooth fading effect every 2.5 seconds
+      setInterval(() => {
+        const carouselImgElement = document.getElementById('carousel-image');
+        if (!carouselImgElement) return;
+
+        const slides = settings.carouselImages && settings.carouselImages.length ? settings.carouselImages : [
+          'https://images.unsplash.com/photo-1618220179428-22790b461013?w=800',
+          'https://images.unsplash.com/photo-1617806118233-18e1db207fd6?w=800'
+        ];
+
+        carouselIndex = (carouselIndex + 1) % slides.length;
+        
+        // Transition Fade animation
+        carouselImgElement.style.opacity = '0';
+        carouselImgElement.style.transform = 'scale(0.97)';
+        
+        setTimeout(() => {
+          carouselImgElement.src = slides[carouselIndex];
+          carouselImgElement.style.opacity = '1';
+          carouselImgElement.style.transform = 'scale(1)';
+          document.getElementById('carousel-indicator').innerText = `${carouselIndex + 1} / ${slides.length}`;
+        }, 300);
+      }, 2500);
+
+      // Setup lucide icons once at start
+      lucide.createIcons();
+    };
+
+    // Helper: Toast alerts
+    function showToast(message, type = 'success') {
+      const toastContainer = document.getElementById('toast-container');
+      const toastId = 'toast-' + Date.now();
+      
+      let indicatorColor = 'bg-primary';
+      if (type === 'error') indicatorColor = 'bg-rose-500';
+      if (type === 'warning') indicatorColor = 'bg-amber-500';
+
+      const toastHtml = `
+        <div id="${toastId}" class="flex items-center gap-3 px-4 py-3 rounded-xl shadow-xl border border-blue-100 bg-white/95 backdrop-blur-md transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto">
+          <span class="w-2.5 h-2.5 rounded-full ${indicatorColor}"></span>
+          <p class="text-xs font-semibold text-slate-800">${message}</p>
+          <button onclick="removeToast('${toastId}')" class="ml-2 text-slate-400 hover:text-slate-800 focus:outline-none">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      `;
+      
+      toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+      lucide.createIcons();
+      
+      const element = document.getElementById(toastId);
+      setTimeout(() => {
+        element.classList.remove('translate-y-2', 'opacity-0');
+      }, 50);
+
+      setTimeout(() => removeToast(toastId), 4000);
+    }
+
+    function removeToast(toastId) {
+      const element = document.getElementById(toastId);
+      if (element) {
+        element.classList.add('translate-y-2', 'opacity-0');
+        setTimeout(() => element.remove(), 300);
+      }
+    }
+
+    // Dynamic color theme applicator
+    function applyThemeStyles() {
+      const dynamicStyle = document.getElementById('dynamic-theme-style');
+      const primaryColor = settings.primaryColor || '#0055ff';
+      dynamicStyle.innerHTML = `
+        :root {
+          --color-primary: ${primaryColor};
+        }
+        .bg-primary {
+          background-color: ${primaryColor} !important;
+        }
+        .text-primary {
+          color: ${primaryColor} !important;
+        }
+        .border-primary {
+          border-color: ${primaryColor} !important;
+        }
+        .hover\\:bg-primary-dark:hover {
+          filter: brightness(0.9);
+        }
+        .hover\\:text-primary:hover {
+          color: ${primaryColor} !important;
+        }
+      `;
+
+      // Update structural elements with state values
+      document.getElementById('header-logo').src = settings.logoImage || "image_593650.jpg";
+      document.getElementById('header-title').innerText = settings.bannerTitle || "HOÀNG PHÚC GLASS";
+      document.getElementById('header-subtitle').innerText = settings.bannerSubtitle || "Sức mạnh từ niềm tin";
+      
+      document.getElementById('about-hero-title').innerText = settings.bannerTitle || "HOÀNG PHÚC GLASS";
+      document.getElementById('about-hero-subtitle').innerText = `"${settings.bannerSubtitle || 'Sức mạnh từ niềm tin'}"`;
+
+      document.getElementById('footer-logo').src = settings.logoImage || "image_593650.jpg";
+      document.getElementById('footer-title').innerText = settings.bannerTitle || "HOÀNG PHÚC GLASS";
+      document.getElementById('footer-subtitle').innerText = `"${settings.bannerSubtitle || 'Sức mạnh từ niềm tin'}" — Chuyên gia đo đạc, chế tác hoàn thiện phôi gương dán tường nghệ thuật, vách kính chịu lực cao cấp.`;
+      document.getElementById('footer-copy-info').innerText = `© 2026 ${settings.bannerTitle || "Hoàng Phúc Glass"}. Hệ thống kết nối lưu trữ SQLite & Gemini AI.`;
+      
+      document.getElementById('login-brand-logo').src = settings.logoImage || "image_593650.jpg";
+    }
+
+    // Tab switcher with smooth slides
+    function switchTab(tabId) {
+      activeTab = tabId;
+
+      // Select nav buttons with safe state checks
+      const tabs = ['about', 'shop', 'tracking', 'news', 'admin'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`nav-${t}`);
+        if (!btn) return;
+
+        btn.className = "nav-btn px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-300 cursor-pointer";
+        
+        if (t === 'admin') {
+          if (user && user.role === 'admin') {
+            btn.classList.remove('hidden');
+            btn.classList.add('flex', 'items-center', 'gap-1.5');
+          } else {
+            btn.classList.add('hidden');
+            btn.classList.remove('flex');
+          }
+        }
+
+        // Apply Active vs Inactive state colors
+        if (t === tabId) {
+          if (t === 'admin') {
+            btn.classList.add('bg-amber-500', 'text-white', 'shadow-md', 'shadow-amber-500/20', 'hover:bg-amber-600');
+          } else {
+            btn.classList.add('bg-primary', 'text-white', 'shadow-lg', 'shadow-blue-500/20');
+          }
+        } else {
+          if (t === 'admin') {
+            btn.classList.add('bg-amber-500/10', 'text-amber-600', 'hover:bg-amber-500/20');
+          } else {
+            btn.classList.add('text-slate-500', 'hover:text-slate-900', 'hover:bg-slate-200/50');
+          }
+        }
+      });
+
+      // Hide all pane content
+      document.querySelectorAll('.tab-pane').forEach(pane => {
+        pane.classList.add('hidden');
+        pane.classList.remove('tab-pane-animate');
+      });
+
+      // Show requested tab with elegant transition
+      const targetPane = document.getElementById(`tab-${tabId}`);
+      if (targetPane) {
+        targetPane.classList.remove('hidden');
+        // Trigger reflow to restart animation smoothly
+        void targetPane.offsetWidth;
+        targetPane.classList.add('tab-pane-animate');
+      }
+
+      // Special re-renders
+      if (tabId === 'shop') {
+        renderProductsGrid();
+        renderCartBanner();
+      } else if (tabId === 'news') {
+        renderAnnouncements();
+      } else if (tabId === 'admin') {
+        if (!user || user.role !== 'admin') {
+          switchTab('login');
+          showToast("Bạn cần đăng nhập bằng tài khoản Quản trị viên để truy cập!", "warning");
+        } else {
+          renderAdminDashboard();
+        }
+      }
+    }
+
+    // Dynamic Multi-render coordinator
+    function renderAll() {
+      // General contents
+      document.getElementById('about-text-content').innerText = aboutContent;
+      document.getElementById('admin-about-textarea').value = aboutContent;
+
+      // Logged user context header rendering
+      const profileWidget = document.getElementById('user-profile-widget');
+      const authHeaderBtn = document.getElementById('auth-action-btn');
+      const navAdmin = document.getElementById('nav-admin');
+
+      if (user) {
+        profileWidget.classList.remove('hidden');
+        profileWidget.classList.add('flex');
+        document.getElementById('user-display-name').innerText = user.name;
+        document.getElementById('user-display-role').innerText = user.role === 'admin' ? 'Quản trị viên' : 'Thành viên';
+        authHeaderBtn.innerHTML = `<i data-lucide="log-out" class="w-3.5 h-3.5"></i> <span>Đăng xuất</span>`;
+        authHeaderBtn.className = "px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl transition-all border border-rose-200/40 cursor-pointer flex items-center gap-1 text-xs font-bold";
+        
+        if (user.role === 'admin') {
+          navAdmin.classList.remove('hidden');
+          navAdmin.classList.add('flex');
+        } else {
+          navAdmin.classList.add('hidden');
+          navAdmin.classList.remove('flex');
+        }
+      } else {
+        profileWidget.classList.add('hidden');
+        profileWidget.classList.remove('flex');
+        authHeaderBtn.innerHTML = `<i data-lucide="log-in" class="w-3.5 h-3.5"></i> <span>Đăng nhập</span>`;
+        authHeaderBtn.className = "px-4 py-2 bg-primary hover:bg-primary-dark text-white text-xs font-bold rounded-xl shadow-md transition-all border border-blue-400/20 cursor-pointer flex items-center gap-1";
+        navAdmin.classList.add('hidden');
+        navAdmin.classList.remove('flex');
+      }
+
+      renderProductsGrid();
+      renderCartBanner();
+      lucide.createIcons();
+    }
+
+    // Header authenticate click logic
+    function handleAuthHeaderAction() {
+      if (user) {
+        logout();
+      } else {
+        switchTab('login');
+      }
+    }
+
+    // AUTH SYSTEM
+    function switchAuthMode(mode) {
+      authMode = mode;
+      const switchLogin = document.getElementById('auth-switch-login');
+      const switchReg = document.getElementById('auth-switch-register');
+      const formLogin = document.getElementById('form-login-box');
+      const formReg = document.getElementById('form-register-box');
+
+      if (mode === 'login') {
+        switchLogin.className = "py-2 text-xs font-bold rounded-lg transition-all bg-primary text-white shadow-md";
+        switchReg.className = "py-2 text-xs font-bold rounded-lg transition-all text-slate-500";
+        formLogin.classList.remove('hidden');
+        formReg.classList.add('hidden');
+        document.getElementById('login-header-title').innerText = "Đăng nhập";
+      } else {
+        switchLogin.className = "py-2 text-xs font-bold rounded-lg transition-all text-slate-500";
+        switchReg.className = "py-2 text-xs font-bold rounded-lg transition-all bg-primary text-white shadow-md";
+        formLogin.classList.add('hidden');
+        formReg.classList.remove('hidden');
+        document.getElementById('login-header-title').innerText = "Đăng ký";
+      }
+    }
+
+    function handleLoginSubmit(event) {
+      event.preventDefault();
+      const userField = document.getElementById('login-username').value.trim();
+      const passField = document.getElementById('login-password').value;
+
+      // BẢO MẬT: Kiểm tra thông tin Admin duy nhất
+      if (userField === 'admin' && passField === 'Vuhunght82gm11@') {
+        const adminSession = {
+          name: "Hoàng Phúc Admin",
+          email: "admin",
+          role: "admin"
+        };
+        user = adminSession;
+        localStorage.setItem('glassy_user', JSON.stringify(adminSession));
+        showToast("Đăng nhập tài khoản Quản trị viên thành công!");
+        
+        // Reset fields
+        document.getElementById('login-username').value = "";
+        document.getElementById('login-password').value = "";
+
+        renderAll();
+        switchTab('admin');
+        return;
+      } else if (userField === 'admin') {
+        showToast("Mật khẩu Quản trị viên không chính xác!", "error");
+        return;
+      }
+
+      // Tài khoản khách hàng thường
+      const userSession = {
+        name: userField.split('@')[0] || "Khách Hàng",
+        email: userField,
+        role: "user"
+      };
+      user = userSession;
+      localStorage.setItem('glassy_user', JSON.stringify(userSession));
+      showToast("Đăng nhập tài khoản thành công!");
+      
+      // Reset
+      document.getElementById('login-username').value = "";
+      document.getElementById('login-password').value = "";
+
+      renderAll();
+      
+      // Safe redirect back to checkout progress if payment sequence was active
+      if (shopView === 'checkout') {
+        switchTab('shop');
+        goToCheckoutStep(3);
+      } else {
+        switchTab('shop');
+      }
+    }
+
+    function handleRegisterSubmit(event) {
+      event.preventDefault();
+      const regName = document.getElementById('reg-name').value.trim();
+      const regUser = document.getElementById('reg-username').value.trim();
+      const regPass = document.getElementById('reg-password').value;
+
+      const newUserObj = {
+        name: regName,
+        email: regUser,
+        role: "user"
+      };
+
+      user = newUserObj;
+      localStorage.setItem('glassy_user', JSON.stringify(newUserObj));
+      showToast("Đăng ký & Đăng nhập thành công!");
+
+      // Reset fields
+      document.getElementById('reg-name').value = "";
+      document.getElementById('reg-username').value = "";
+      document.getElementById('reg-password').value = "";
+
+      renderAll();
+      switchTab('shop');
+    }
+
+    function logout() {
+      user = null;
+      localStorage.removeItem('glassy_user');
+      showToast("Đã đăng xuất tài khoản.");
+      renderAll();
+      switchTab('about');
+    }
+
+    // SHOP PRODUCTS MECHANICS
+    function renderProductsGrid() {
+      const categoryFilter = document.getElementById('filter-category').value;
+      const thicknessFilter = document.getElementById('filter-thickness').value;
+      const searchVal = document.getElementById('search-product').value.toLowerCase();
+      
+      const grid = document.getElementById('products-grid');
+      grid.innerHTML = "";
+
+      const filtered = products.filter(p => {
+        const catMatch = categoryFilter === 'all' || p.category === categoryFilter;
+        const thickMatch = thicknessFilter === 'all' || p.thickness === thicknessFilter;
+        const searchMatch = p.name.toLowerCase().includes(searchVal) || p.description.toLowerCase().includes(searchVal);
+        return catMatch && thickMatch && searchMatch;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-20 bg-white/70 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-sm">
+            <i data-lucide="package" class="mx-auto text-slate-450 mb-3 w-12 h-12"></i>
+            <p class="text-slate-500 text-xs">Không tìm thấy sản phẩm kính cường lực phù hợp.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      filtered.forEach(p => {
+        let categoryText = "Kính cường lực";
+        if (p.category === 'category_decorative') categoryText = "Gương Decor";
+        if (p.category === 'category_colored') categoryText = "Kính Nghệ Thuật";
+
+        let thicknessText = "8mm";
+        if (p.thickness === 'thickness_5mm') thicknessText = "5mm";
+        if (p.thickness === 'thickness_10mm') thicknessText = "10mm";
+        if (p.thickness === 'thickness_12mm') thicknessText = "12mm";
+
+        const card = `
+          <div class="group bg-white/80 backdrop-blur-md rounded-2xl overflow-hidden border border-slate-200/80 hover:border-primary/50 hover:shadow-xl transition-all duration-300 flex flex-col hover:-translate-y-1.5">
+            <div class="relative aspect-square bg-slate-50 overflow-hidden cursor-pointer" onclick="openProductModal('${p.id}')">
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" onerror="handleImageFallback(this, 'product')">
+              <span class="absolute top-3 right-3 bg-white/95 text-primary text-[9px] font-black px-2.5 py-0.5 rounded-lg shadow-sm border border-slate-100 uppercase">
+                ${categoryText}
+              </span>
+            </div>
+
+            <div class="p-5 flex-grow flex flex-col justify-between">
+              <div>
+                <span class="text-[9px] font-bold px-2 py-0.5 bg-slate-100 text-primary rounded-md border border-slate-200">
+                  Khổ dày: ${thicknessText}
+                </span>
+                <h3 class="font-bold text-slate-800 mt-3 text-sm line-clamp-1 group-hover:text-primary transition-colors">${p.name}</h3>
+                <p class="text-[11px] text-slate-500 line-clamp-2 mt-1.5 leading-relaxed">${p.description}</p>
+              </div>
+
+              <div class="mt-4 border-t border-slate-100 pt-3">
+                <div class="flex justify-between items-baseline mb-3">
+                  <span class="text-[10px] text-slate-400 font-bold">ĐƠN GIÁ:</span>
+                  <span class="text-xs font-bold text-primary">${p.price}</span>
+                </div>
+                <button onclick="addToCart('${p.id}')" class="w-full py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                  <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i> Thêm vào giỏ
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.insertAdjacentHTML('beforeend', card);
+      });
+
+      lucide.createIcons();
+    }
+
+    function applyFilters() {
+      renderProductsGrid();
+    }
+
+    // CART SYSTEM MECHANICS
+    function addToCart(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      const existing = cart.find(item => item.id === productId);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ ...product, quantity: 1 });
+      }
+
+      showToast(`Đã chọn thêm: ${product.name}`);
+      renderAll();
+    }
+
+    function renderCartBanner() {
+      const banner = document.getElementById('shop-cart-banner');
+      if (cart.length > 0 && shopView === 'grid') {
+        banner.classList.remove('hidden');
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function enterCheckoutView() {
+      if (cart.length === 0) {
+        showToast("Giỏ hàng của bạn đang trống!", "error");
+        return;
+      }
+      shopView = 'checkout';
+      document.getElementById('shop-grid-view').classList.add('hidden');
+      document.getElementById('shop-checkout-view').classList.remove('hidden');
+      document.getElementById('shop-cart-banner').classList.add('hidden');
+      
+      goToCheckoutStep(1);
+    }
+
+    function exitCheckoutView() {
+      shopView = 'grid';
+      document.getElementById('shop-grid-view').classList.remove('hidden');
+      document.getElementById('shop-checkout-view').classList.add('hidden');
+      renderCartBanner();
+    }
+
+    function updateCartItemQty(productId, delta) {
+      const item = cart.find(i => i.id === productId);
+      if (!item) return;
+
+      const nextQty = item.quantity + delta;
+      if (nextQty < 1) {
+        item.quantity = 1;
+      } else {
+        item.quantity = nextQty;
+      }
+
+      renderCartStepsAndCalculates();
+    }
+
+    function removeCartItem(productId) {
+      cart = cart.filter(i => i.id !== productId);
+      showToast("Đã gỡ tấm kính ra khỏi giỏ hàng.");
+
+      if (cart.length === 0) {
+        exitCheckoutView();
+        showToast("Giỏ hàng trống! Đã quay lại cửa hàng để chọn kính.", "error");
+      } else {
+        renderCartStepsAndCalculates();
+      }
+    }
+
+    function renderCartStepsAndCalculates() {
+      const containerList = document.getElementById('cart-items-list');
+      containerList.innerHTML = "";
+
+      cart.forEach(item => {
+        const itemHtml = `
+          <div class="flex items-center justify-between p-3.5 bg-white border border-slate-200 rounded-xl gap-3 shadow-xs">
+            <div class="flex items-center gap-3">
+              <img src="${item.image}" alt="" class="w-12 h-12 rounded-lg object-cover bg-slate-50 border border-slate-100" onerror="handleImageFallback(this, 'product')">
+              <div>
+                <h4 class="font-bold text-slate-800 text-xs line-clamp-1">${item.name}</h4>
+                <p class="text-[10px] text-primary font-bold">${item.price}</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 ml-auto">
+              <div class="flex items-center gap-1 bg-slate-50 p-1 rounded-lg border border-slate-200">
+                <button onclick="updateCartItemQty('${item.id}', -1)" class="w-5 h-5 flex items-center justify-center text-slate-400 hover:bg-slate-200 rounded text-xs">-</button>
+                <span class="text-[11px] font-bold w-5 text-center text-slate-800">${item.quantity}</span>
+                <button onclick="updateCartItemQty('${item.id}', 1)" class="w-5 h-5 flex items-center justify-center text-slate-400 hover:bg-slate-200 rounded text-xs">+</button>
+              </div>
+              <button onclick="removeCartItem('${item.id}')" class="text-slate-400 hover:text-rose-500 p-1.5 transition-colors">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        `;
+        containerList.insertAdjacentHTML('beforeend', itemHtml);
+      });
+
+      let subtotalSum = 0;
+      cart.forEach(item => {
+        const numericPrice = parseInt(item.price.replace(/[^0-9]/g, '')) || 0;
+        subtotalSum += (numericPrice * item.quantity);
+      });
+
+      const promoDiscount = subtotalSum * discountApplied;
+      const finalTotal = subtotalSum - promoDiscount;
+
+      document.getElementById('calc-subtotal').innerText = subtotalSum.toLocaleString('vi-VN') + " ₫";
+      
+      if (discountApplied > 0) {
+        document.getElementById('promo-discount-row').className = "flex justify-between text-emerald-600";
+        document.getElementById('promo-label').innerText = `Giảm giá từ ưu đãi (${discountApplied * 100}%):`;
+        document.getElementById('calc-discount').innerText = `- ${promoDiscount.toLocaleString('vi-VN')} ₫`;
+      } else {
+        document.getElementById('promo-discount-row').className = "hidden";
+      }
+
+      document.getElementById('calc-total').innerText = finalTotal.toLocaleString('vi-VN') + " ₫";
+
+      lucide.createIcons();
+    }
+
+    function goToCheckoutStep(step) {
+      if (cart.length === 0) return;
+      cartStep = step;
+
+      for (let i = 1; i <= 3; i++) {
+        const badge = document.getElementById(`step-badge-${i}`);
+        if (i === step) {
+          badge.className = "px-2.5 py-1 rounded-lg bg-primary text-white shadow-sm";
+        } else {
+          badge.className = "px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-400";
+        }
+      }
+
+      document.getElementById('checkout-pane-1').classList.add('hidden');
+      document.getElementById('checkout-pane-2').classList.add('hidden');
+      document.getElementById('checkout-pane-3').classList.add('hidden');
+
+      document.getElementById(`checkout-pane-${step}`).classList.remove('hidden');
+
+      renderCartStepsAndCalculates();
+
+      if (step === 3) {
+        const guardWidget = document.getElementById('checkout-auth-guard');
+        const formWidget = document.getElementById('checkout-dispatch-form');
+
+        if (!user) {
+          guardWidget.classList.remove('hidden');
+          formWidget.classList.add('hidden');
+        } else {
+          guardWidget.classList.add('hidden');
+          formWidget.classList.remove('hidden');
+          
+          document.getElementById('order-name').value = user.name || "";
+          document.getElementById('order-email').value = (user.email !== 'admin' ? user.email : "vudinhhung11@gmail.com");
+        }
+      }
+    }
+
+    function applyPromoCode() {
+      const code = document.getElementById('promo-code-input').value.trim().toUpperCase();
+      if (code === 'HOANGPHUC10' || code === 'GIAM10') {
+        discountApplied = 0.1;
+        showToast("Áp dụng mã ưu đãi giảm 10% thành công!");
+      } else if (code === 'HOANGPHUC20' || code === 'GIAM20') {
+        discountApplied = 0.2;
+        showToast("Áp dụng mã ưu đãi giảm 20% thành công!");
+      } else {
+        showToast("Mã giảm giá không chính xác hoặc đã hết hạn", "error");
+      }
+      renderCartStepsAndCalculates();
+    }
+
+    function handlePlaceOrder(event) {
+      event.preventDefault();
+      if (cart.length === 0) {
+        showToast("Giỏ hàng rỗng, không thể tiếp tục đặt hàng!", "error");
+        return;
+      }
+
+      const orderName = document.getElementById('order-name').value;
+      const orderPhone = document.getElementById('order-phone').value;
+      const orderEmail = document.getElementById('order-email').value;
+      const orderAddress = document.getElementById('order-address').value;
+      const orderNotesVal = document.getElementById('order-notes').value;
+
+      document.getElementById('order-loading-spinner').classList.remove('hidden');
+      document.getElementById('form-place-order').classList.add('hidden');
+
+      setTimeout(() => {
+        const orderId = 'HP-' + Math.floor(100000 + Math.random() * 900000);
+        const newOrderObj = {
+          id: orderId,
+          customerName: orderName,
+          phone: orderPhone,
+          email: orderEmail,
+          address: orderAddress,
+          notes: orderNotesVal || "Nhận trực tiếp tại xưởng 36 Phạm Văn Sáng",
+          status: 'pending',
+          createdAt: Date.now(),
+          items: [...cart],
+          discount: discountApplied
+        };
+
+        orders.unshift(newOrderObj);
+        localStorage.setItem('hp_orders', JSON.stringify(orders));
+
+        cart = [];
+        discountApplied = 0;
+        document.getElementById('promo-code-input').value = "";
+        
+        document.getElementById('order-loading-spinner').classList.add('hidden');
+        document.getElementById('form-place-order').classList.remove('hidden');
+
+        shopView = 'grid';
+        cartStep = 1;
+        
+        showToast("Yêu cầu đơn đặt kính đã được gửi đến vudinhhung11@gmail.com!");
+        
+        switchTab('tracking');
+        document.getElementById('tracking-input-id').value = orderId;
+        triggerTrackQuery(orderId);
+      }, 3000);
+    }
+
+    // TRACKING SYSTEMS
+    function handleTrackingQuery(event) {
+      event.preventDefault();
+      const trackId = document.getElementById('tracking-input-id').value.trim();
+      if (!trackId) {
+        showToast("Vui lòng nhập mã đơn đặt hàng!", "error");
+        return;
+      }
+      triggerTrackQuery(trackId);
+    }
+
+    function triggerTrackQuery(trackId) {
+      const orderFound = orders.find(o => o.id === trackId || o.phone === trackId);
+      const visualCard = document.getElementById('tracking-visual-card');
+      visualCard.classList.remove('hidden');
+
+      if (orderFound) {
+        currentTrackedOrder = orderFound;
+        showToast("Tìm thấy thông tin đơn đặt hàng!");
+      } else {
+        currentTrackedOrder = {
+          id: trackId,
+          customerName: "Khách hàng Hoàng Phúc",
+          status: 'shipped',
+          createdAt: Date.now()
+        };
+        showToast("Hiển thị thông số đơn mẫu thử nghiệm!");
+      }
+
+      document.getElementById('track-order-display-id').innerText = currentTrackedOrder.id;
+      
+      let percentage = 15;
+      let statusText = "Nhận đơn hàng";
+      
+      const label1 = document.getElementById('step-label-1');
+      const label2 = document.getElementById('step-label-2');
+      const label3 = document.getElementById('step-label-3');
+
+      const step1 = document.getElementById('landmark-step-1');
+      const step2 = document.getElementById('landmark-step-2');
+      const step3 = document.getElementById('landmark-step-3');
+
+      label1.className = "text-slate-400";
+      label2.className = "text-slate-400";
+      label3.className = "text-slate-400";
+      step1.className = "w-5 h-5 rounded-full border-2 bg-slate-200 border-slate-300 text-slate-400 flex items-center justify-center";
+      step2.className = "w-5 h-5 rounded-full border-2 bg-slate-200 border-slate-300 text-slate-400 flex items-center justify-center";
+      step3.className = "w-5 h-5 rounded-full border-2 bg-slate-200 border-slate-300 text-slate-400 flex items-center justify-center";
+
+      if (currentTrackedOrder.status === 'pending') {
+        percentage = 15;
+        statusText = "Đã nhận đơn hàng (Đang chờ cắt)";
+        label1.className = "text-primary font-extrabold";
+        step1.className = "w-5 h-5 rounded-full border-2 bg-blue-600 border-white text-white flex items-center justify-center";
+      } else if (currentTrackedOrder.status === 'shipped') {
+        percentage = 50;
+        statusText = "Đang gia công (Mài bóng CNC)";
+        label1.className = "text-primary font-bold";
+        label2.className = "text-primary font-extrabold";
+        step1.className = "w-5 h-5 rounded-full border-2 bg-blue-600 border-white text-white flex items-center justify-center";
+        step2.className = "w-5 h-5 rounded-full border-2 bg-blue-600 border-white text-white flex items-center justify-center";
+      } else {
+        percentage = 100;
+        statusText = "Hoàn thành gia công (Liên lạc nhận kính)";
+        label1.className = "text-primary font-bold";
+        label2.className = "text-primary font-bold";
+        label3.className = "text-primary font-extrabold";
+        step1.className = "w-5 h-5 rounded-full border-2 bg-blue-600 border-white text-white flex items-center justify-center";
+        step2.className = "w-5 h-5 rounded-full border-2 bg-blue-600 border-white text-white flex items-center justify-center";
+        step3.className = "w-5 h-5 rounded-full border-2 bg-blue-600 border-white text-white flex items-center justify-center";
+      }
+
+      document.getElementById('track-order-display-status').innerText = statusText;
+      document.getElementById('track-progress-fill').style.width = percentage + "%";
+      document.getElementById('track-truck-icon-container').style.left = percentage + "%";
+    }
+
+    // NEWS SYSTEM
+    function renderAnnouncements() {
+      const container = document.getElementById('news-container');
+      container.innerHTML = "";
+
+      if (announcements.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-16 bg-white rounded-2xl border border-slate-200/80 shadow-sm">
+            <i data-lucide="newspaper" class="mx-auto text-slate-400 mb-3 w-10 h-10"></i>
+            <p class="text-slate-500 text-xs">Hiện tại ban biên tập đang soạn tin bài viết mới.</p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      announcements.forEach(item => {
+        const itemHtml = `
+          <div class="p-5 bg-white border border-slate-200 rounded-2xl space-y-2 hover:border-primary transition-all duration-300 shadow-xs">
+            <div class="flex items-center justify-between gap-2 text-[10px]">
+              <span class="px-2 py-0.5 bg-blue-50 text-primary rounded-md font-bold uppercase">${item.category}</span>
+              <span class="text-slate-400 font-mono">${item.date}</span>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800">${item.title}</h3>
+            <p class="text-xs text-slate-650 leading-relaxed whitespace-pre-wrap">${item.content}</p>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', itemHtml);
+      });
+
+      lucide.createIcons();
+    }
+
+    // PRODUCT DETAIL MODAL
+    function openProductModal(productId) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      selectedModalProduct = product;
+
+      document.getElementById('modal-prod-image').src = product.image;
+      document.getElementById('modal-prod-name').innerText = product.name;
+      document.getElementById('modal-prod-price').innerText = product.price;
+
+      let thicknessText = "8mm";
+      if (product.thickness === 'thickness_5mm') thicknessText = "5mm";
+      if (product.thickness === 'thickness_10mm') thicknessText = "10mm";
+      if (product.thickness === 'thickness_12mm') thicknessText = "12mm";
+      document.getElementById('modal-prod-thickness').innerText = "Khổ dày: " + thicknessText;
+
+      document.getElementById('modal-prod-description').innerText = product.description;
+
+      document.getElementById('ai-consultation-result').classList.add('hidden');
+      document.getElementById('ai-consultation-result').innerText = "";
+      document.getElementById('ai-consult-trigger-btn').innerText = "Xem tư vấn thiết kế";
+      document.getElementById('ai-consult-trigger-btn').disabled = false;
+
+      document.getElementById('modal-add-to-cart-btn').onclick = function() {
+        addToCart(productId);
+        closeProductModal();
+      };
+
+      document.getElementById('product-detail-modal').classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-detail-modal').classList.add('hidden');
+      selectedModalProduct = null;
+    }
+
+    // MODAL: DYNAMIC AI TƯ VẤN (GEMINI CLIENT WITH EXPONENTIAL BACKOFF RETRY)
+    async function requestAiConsultation() {
+      if (!selectedModalProduct) return;
+
+      const triggerBtn = document.getElementById('ai-consult-trigger-btn');
+      const resultBox = document.getElementById('ai-consultation-result');
+
+      triggerBtn.innerText = "Đang phân tích...";
+      triggerBtn.disabled = true;
+
+      const promptText = `Tư vấn độ dày ${selectedModalProduct.thickness} của sản phẩm "${selectedModalProduct.name}" dùng cho những mục đích gì và hướng dẫn bảo quản ngắn gọn 3 dòng bằng tiếng Việt.`;
+      const payload = {
+        contents: [{ parts: [{ text: promptText }] }]
+      };
+
+      let delay = 1000;
+      let textResult = "";
+      let isSuccess = false;
+
+      for (let retry = 1; retry <= 5; retry++) {
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          
+          if (res.ok) {
+            const resultData = await res.json();
+            textResult = resultData.candidates?.[0]?.content?.parts?.[0]?.text || "Không tìm thấy phân tích từ AI.";
+            isSuccess = true;
+            break;
+          }
+        } catch (e) {}
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2;
+      }
+
+      if (isSuccess && textResult) {
+        resultBox.innerText = textResult.trim();
+        resultBox.classList.remove('hidden');
+        triggerBtn.innerText = "Đã phân tích xong";
+      } else {
+        resultBox.innerText = "Hiện tại dịch vụ tư vấn AI đang bận. Bạn hãy thử lại sau ít phút nhé!";
+        resultBox.classList.remove('hidden');
+        triggerBtn.innerText = "Lỗi tư vấn AI";
+      }
+    }
+
+    // ADMIN SYSTEM CHANNELS & SUBTABS
+    function renderAdminDashboard() {
+      document.getElementById('admin-user-salute').innerText = user?.name || "Quản trị viên";
+      renderAdminProductsList();
+      renderAdminOrdersList();
+      renderAdminAnnouncementsList();
+    }
+
+    function switchAdminSubTab(subTabId) {
+      adminSubTab = subTabId;
+
+      document.querySelectorAll('.admin-sub-btn').forEach(btn => {
+        btn.className = "admin-sub-btn px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-2 transition-all duration-300 bg-white text-slate-600 hover:bg-slate-150 border border-slate-200/60 cursor-pointer";
+      });
+
+      const targetBtn = document.getElementById(`admin-sub-${subTabId}`);
+      if (targetBtn) {
+        targetBtn.className = "admin-sub-btn px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-2 transition-all duration-300 bg-slate-900 text-white shadow-md cursor-pointer";
+      }
+
+      document.querySelectorAll('.admin-pane-content').forEach(pane => {
+        pane.classList.add('hidden');
+      });
+
+      document.getElementById(`admin-pane-${subTabId}`).classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    // INITIALIZE FIELDS WITH RELEVANT CORE STORAGE CONFIGS
+    function initSettingsForm() {
+      document.getElementById('settings-primary-color').value = settings.primaryColor;
+      document.getElementById('settings-primary-color-text').value = settings.primaryColor;
+      document.getElementById('settings-logo-img').value = settings.logoImage;
+      document.getElementById('settings-banner-title').value = settings.bannerTitle;
+      document.getElementById('settings-banner-subtitle').value = settings.bannerSubtitle;
+      document.getElementById('settings-banner-image').value = settings.bannerImage;
+
+      // Populate Image Control Panel Carousel values if exists
+      if (settings.carouselImages && settings.carouselImages.length >= 4) {
+        document.getElementById('settings-carousel-1').value = settings.carouselImages[0];
+        document.getElementById('settings-carousel-2').value = settings.carouselImages[1];
+        document.getElementById('settings-carousel-3').value = settings.carouselImages[2];
+        document.getElementById('settings-carousel-4').value = settings.carouselImages[3];
+      }
+
+      updateLivePreview();
+    }
+
+    function updateLivePreview() {
+      const primaryColorVal = document.getElementById('settings-primary-color').value;
+      const primaryColorText = document.getElementById('settings-primary-color-text');
+      
+      if (primaryColorText && document.activeElement !== primaryColorText) {
+        primaryColorText.value = primaryColorVal;
+      }
+
+      const logoImgVal = document.getElementById('settings-logo-img').value;
+      const bannerTitleVal = document.getElementById('settings-banner-title').value;
+      const bannerSubVal = document.getElementById('settings-banner-subtitle').value;
+
+      document.getElementById('preview-logo').src = logoImgVal || "image_593650.jpg";
+      document.getElementById('preview-title').innerText = bannerTitleVal || "HOÀNG PHÚC GLASS";
+      document.getElementById('preview-subtitle').innerText = bannerSubVal || "Sức mạnh từ niềm tin";
+      document.getElementById('preview-subtitle').style.color = primaryColorVal;
+    }
+
+    function saveThemeSettings() {
+      const primaryColorVal = document.getElementById('settings-primary-color-text').value || '#0055ff';
+      const logoImgVal = document.getElementById('settings-logo-img').value;
+      const bannerTitleVal = document.getElementById('settings-banner-title').value;
+      const bannerSubVal = document.getElementById('settings-banner-subtitle').value;
+      const bannerBgVal = document.getElementById('settings-banner-image').value;
+
+      settings.primaryColor = primaryColorVal;
+      settings.logoImage = logoImgVal;
+      settings.bannerTitle = bannerTitleVal;
+      settings.bannerSubtitle = bannerSubVal;
+      settings.bannerImage = bannerBgVal;
+
+      localStorage.setItem('hp_settings', JSON.stringify(settings));
+      applyThemeStyles();
+      showToast("Đã lưu cài đặt giao diện và màu sắc chủ đạo!");
+    }
+
+    // ĐIỀU KHIỂN ẢNH PANEL SYSTEM
+    function saveImageControlSettings() {
+      const logoImg = document.getElementById('settings-logo-img').value.trim();
+      const bannerImg = document.getElementById('settings-banner-image').value.trim();
+      
+      const c1 = document.getElementById('settings-carousel-1').value.trim();
+      const c2 = document.getElementById('settings-carousel-2').value.trim();
+      const c3 = document.getElementById('settings-carousel-3').value.trim();
+      const c4 = document.getElementById('settings-carousel-4').value.trim();
+
+      settings.logoImage = logoImg;
+      settings.bannerImage = bannerImg;
+      settings.carouselImages = [c1, c2, c3, c4];
+
+      localStorage.setItem('hp_settings', JSON.stringify(settings));
+      applyThemeStyles();
+      showToast("Cấu hình lưu trữ hình ảnh thành công! Các slide ảnh mới đã được kích hoạt.");
+    }
+
+    function saveAboutContent() {
+      const newAbout = document.getElementById('admin-about-textarea').value;
+      aboutContent = newAbout;
+      localStorage.setItem('hp_about_text', newAbout);
+      
+      document.getElementById('about-text-content').innerText = newAbout;
+      showToast("Lưu và phát hành thành công bài giới thiệu mới!");
+    }
+
+    // ADMIN: PRODUCT CREATOR + AI GEMINI GENERATOR
+    async function generateAiProductDescription() {
+      const nameField = document.getElementById('new-prod-name').value.trim();
+      if (!nameField) {
+        showToast("Vui lòng điền tên mẫu kính trước!", "error");
+        return;
+      }
+
+      const aiBtn = document.getElementById('ai-desc-btn');
+      aiBtn.innerHTML = `<i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> <span>Đang viết...</span>`;
+      lucide.createIcons();
+
+      const systemPrompt = "Bạn là trợ lý AI cao cấp của thương hiệu Hoàng Phúc Glass. Hãy viết đúng 2 câu ngắn gọn, tinh túy giới thiệu độ chịu lực và độ bóng mài cạnh của loại kính này bằng tiếng Việt.";
+      const userPrompt = `Hãy viết mô tả bán hàng cho mẫu kính: "${nameField}".`;
+
+      const payload = {
+        contents: [{ parts: [{ text: userPrompt }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] }
+      };
+
+      let delay = 1000;
+      let textResult = "";
+      let isSuccess = false;
+
+      for (let retry = 1; retry <= 5; retry++) {
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          
+          if (res.ok) {
+            const resultData = await res.json();
+            textResult = resultData.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            isSuccess = true;
+            break;
+          }
+        } catch (e) {}
+        await new Promise(resolve => setTimeout(resolve, delay));
+        delay *= 2;
+      }
+
+      aiBtn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3"></i> <span>Gemini AI</span>`;
+      lucide.createIcons();
+
+      if (isSuccess && textResult) {
+        document.getElementById('new-prod-description').value = textResult.trim();
+        showToast("Đã tạo mô tả kính bằng Gemini AI!");
+      } else {
+        showToast("Không kết nối được dịch vụ AI. Hãy nhập thủ công mô tả.", "error");
+      }
+    }
+
+    function handleAddNewProduct(event) {
+      event.preventDefault();
+      
+      const pName = document.getElementById('new-prod-name').value.trim();
+      const pPrice = document.getElementById('new-prod-price').value.trim();
+      const pCat = document.getElementById('new-prod-category').value;
+      const pThick = document.getElementById('new-prod-thickness').value;
+      const pDesc = document.getElementById('new-prod-description').value.trim();
+      const pImage = document.getElementById('new-prod-image').value.trim();
+
+      const newProductObj = {
+        id: 'HPG-' + Math.floor(1000 + Math.random() * 9000),
+        name: pName,
+        description: pDesc || "Sản phẩm chất lượng cao của Hoàng Phúc Glass",
+        price: pPrice,
+        image: pImage,
+        category: pCat,
+        thickness: pThick
+      };
+
+      products.push(newProductObj);
+      localStorage.setItem('hp_products', JSON.stringify(products));
+      showToast("Thêm mới mẫu kính thành công!");
+
+      document.getElementById('admin-add-product-form').reset();
+
+      renderAll();
+      renderAdminProductsList();
+    }
+
+    function removeAdminProduct(id) {
+      products = products.filter(p => p.id !== id);
+      localStorage.setItem('hp_products', JSON.stringify(products));
+      showToast("Đã gỡ sản phẩm kính khỏi kho.");
+      
+      renderAll();
+      renderAdminProductsList();
+    }
+
+    function renderAdminProductsList() {
+      const container = document.getElementById('admin-products-list');
+      container.innerHTML = "";
+      document.getElementById('admin-prod-count').innerText = products.length;
+
+      if (products.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-3">Chưa có phôi kính nào trong kho hàng.</p>`;
+        return;
+      }
+
+      products.forEach(p => {
+        let thicknessText = "8mm";
+        if (p.thickness === 'thickness_5mm') thicknessText = "5mm";
+        if (p.thickness === 'thickness_10mm') thicknessText = "10mm";
+        if (p.thickness === 'thickness_12mm') thicknessText = "12mm";
+
+        const itemHtml = `
+          <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center gap-3">
+              <img src="${p.image}" alt="" class="w-12 h-12 rounded-xl object-cover bg-slate-200 border border-slate-350" onerror="handleImageFallback(this, 'product')">
+              <div>
+                <h4 class="font-bold text-slate-800 text-xs truncate max-w-[150px]">${p.name}</h4>
+                <p class="text-[10px] text-primary font-bold">${p.price}</p>
+                <span class="text-[9px] text-slate-400 font-bold uppercase">Dày: ${thicknessText}</span>
+              </div>
+            </div>
+            <button onclick="removeAdminProduct('${p.id}')" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', itemHtml);
+      });
+      lucide.createIcons();
+    }
+
+    // ADMIN: ORDERS MANAGEMENT
+    function changeOrderStatus(orderId, newStatus) {
+      orders = orders.map(o => {
+        if (o.id === orderId) {
+          return { ...o, status: newStatus };
+        }
+        return o;
+      });
+      localStorage.setItem('hp_orders', JSON.stringify(orders));
+      showToast(`Cập nhật tiến độ đơn hàng ${orderId}`);
+      renderAdminOrdersList();
+    }
+
+    function renderAdminOrdersList() {
+      const container = document.getElementById('admin-orders-list');
+      container.innerHTML = "";
+      document.getElementById('admin-order-count').innerText = orders.length;
+
+      if (orders.length === 0) {
+        container.innerHTML = `<div class="col-span-full text-xs text-slate-400 text-center py-6">Chưa nhận được đơn hàng mới nào của khách hàng.</div>`;
+        return;
+      }
+
+      orders.forEach(order => {
+        let itemsListHtml = "";
+        order.items.forEach(it => {
+          itemsListHtml += `<li>${it.name} (Số lượng: x${it.quantity})</li>`;
+        });
+
+        const card = `
+          <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-3 relative">
+            <div class="flex justify-between items-start border-b border-slate-200 pb-2">
+              <div>
+                <p class="font-extrabold text-slate-900">${order.customerName}</p>
+                <p class="text-[10px] text-slate-400">${new Date(order.createdAt).toLocaleString('vi-VN')}</p>
+              </div>
+              
+              <div class="space-y-1 text-right">
+                <span class="text-[9px] text-slate-400 font-bold block uppercase">Tiến trình gia công:</span>
+                <select onchange="changeOrderStatus('${order.id}', this.value)" class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-[11px] font-black text-primary focus:outline-none cursor-pointer">
+                  <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>Nhận đơn hàng (Mốc 1)</option>
+                  <option value="shipped" ${order.status === 'shipped' ? 'selected' : ''}>Cắt và mài (Mốc 2)</option>
+                  <option value="completed" ${order.status === 'completed' ? 'selected' : ''}>Liên lạc & Bàn giao (Mốc 3)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="space-y-1 text-slate-500 text-[11px]">
+              <p><span class="font-bold text-slate-700">Điện thoại:</span> ${order.phone}</p>
+              <p><span class="font-bold text-slate-700">Địa chỉ:</span> ${order.address}</p>
+              <p><span class="font-bold text-slate-700">Ghi chú:</span> <span class="italic text-slate-600">"${order.notes}"</span></p>
+              <p><span class="font-semibold text-primary">Mã đơn hàng:</span> <span class="text-primary font-mono font-black">${order.id}</span></p>
+              <p class="font-bold text-slate-800 pt-2 border-t border-slate-200 mt-2">Các tấm kính gia công:</p>
+              <ul class="list-disc list-inside text-primary font-black space-y-0.5">
+                ${itemsListHtml}
+              </ul>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', card);
+      });
+    }
+
+    // ADMIN: ANNOUNCEMENT SYSTEM
+    function handleCreateAnnouncement(event) {
+      event.preventDefault();
+      
+      const titleVal = document.getElementById('ann-title').value.trim();
+      const catVal = document.getElementById('ann-category').value;
+      const contentVal = document.getElementById('ann-content').value.trim();
+
+      const newAnn = {
+        id: 'NEWS-' + Math.floor(1000 + Math.random() * 9000),
+        title: titleVal,
+        content: contentVal,
+        category: catVal,
+        date: new Date().toLocaleDateString('vi-VN')
+      };
+
+      announcements.unshift(newAnn);
+      localStorage.setItem('hp_announcements', JSON.stringify(announcements));
+      showToast("Đăng tin tức mới thành công!");
+
+      document.getElementById('ann-title').value = "";
+      document.getElementById('ann-content').value = "";
+
+      renderAnnouncements();
+      renderAdminAnnouncementsList();
+    }
+
+    function renderAdminAnnouncementsList() {
+      const container = document.getElementById('admin-announcements-list');
+      container.innerHTML = "";
+
+      if (announcements.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 py-3 text-center">Chưa có bài tin tức nào được tạo.</p>`;
+        return;
+      }
+
+      announcements.forEach(ann => {
+        const itemHtml = `
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+            <div class="flex justify-between text-[9px] font-bold">
+              <span class="text-primary">${ann.category}</span>
+              <span class="text-slate-400">${ann.date}</span>
+            </div>
+            <h4 class="font-extrabold text-slate-800 text-xs">${ann.title}</h4>
+            <p class="text-[10px] text-slate-500 line-clamp-2">${ann.content}</p>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', itemHtml);
+      });
+    }
+  </script>
 </body>
 </html>
